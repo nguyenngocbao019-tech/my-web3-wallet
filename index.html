@@ -7,37 +7,35 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
     <style>
         :root {
-            --bg-metallic: linear-gradient(145deg, #121316 0%, #090a0c 100%);
-            --card-metallic: linear-gradient(145deg, #1a1c23 0%, #111318 100%);
-            --border-metallic: 1px solid rgba(255, 255, 255, 0.08);
-            --border-glow: 1px solid rgba(245, 158, 11, 0.3);
+            --bg-metallic: #07080a;
+            --card-metallic: linear-gradient(135deg, #14161d 0%, #0d0f14 100%);
+            --border-metallic: 1px solid rgba(255, 255, 255, 0.07);
             --accent-gold: #f59e0b;
             --text-main: #ffffff;
-            --text-sub: #94a3b8;
+            --text-sub: #8c9ba5;
             --green: #10b981;
             --red: #ef4444;
         }
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background: #090a0c;
-            background-image: var(--bg-metallic);
+            background: var(--bg-metallic);
             color: var(--text-main);
             margin: 0;
-            padding: 14px;
+            padding: 12px;
             min-height: 100vh;
         }
         .top-bar {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 14px;
+            margin-bottom: 12px;
         }
         .brand {
             display: flex;
             align-items: center;
-            gap: 8px;
-            font-weight: bold;
-            font-size: 16px;
+            gap: 6px;
+            font-weight: 700;
+            font-size: 15px;
         }
         .brand-status {
             font-size: 11px;
@@ -49,7 +47,7 @@
             gap: 8px;
         }
         .icon-btn {
-            background: var(--card-metallic);
+            background: #151821;
             border: var(--border-metallic);
             color: var(--text-main);
             width: 34px;
@@ -59,25 +57,55 @@
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.4);
         }
         .main-card {
             background: var(--card-metallic);
             border-radius: 20px;
-            padding: 18px;
-            margin-bottom: 14px;
+            padding: 16px;
+            margin-bottom: 12px;
             border: var(--border-metallic);
-            box-shadow: inset 0 1px 0 rgba(255,255,255,0.06), 0 10px 30px rgba(0,0,0,0.7);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.06), 0 12px 30px rgba(0,0,0,0.8);
             position: relative;
             overflow: hidden;
+        }
+        /* Đồng xu vàng ánh kim bên phải y hệt ảnh mẫu */
+        .coin-emblem {
+            position: absolute;
+            right: -10px;
+            top: 15px;
+            width: 110px;
+            height: 110px;
+            background: radial-gradient(circle, #f59e0b 0%, #b45309 60%, #78350f 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 25px rgba(245, 158, 11, 0.3), inset 0 2px 5px rgba(255,255,255,0.4);
+            border: 2px solid #fde047;
+            opacity: 0.95;
+        }
+        .coin-inner-symbol {
+            font-size: 42px;
+            font-weight: 900;
+            color: #fff;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.6);
+            border: 2px solid rgba(255,255,255,0.5);
+            width: 65px;
+            height: 65px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0,0,0,0.15);
         }
         .pair-label {
             font-size: 12px;
             color: var(--text-sub);
-            margin-bottom: 4px;
+            margin-bottom: 2px;
         }
         .main-price {
-            font-size: 30px;
+            font-size: 32px;
             font-weight: 800;
             letter-spacing: -0.5px;
             margin-bottom: 4px;
@@ -92,44 +120,47 @@
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            background: rgba(245, 158, 11, 0.1);
-            border: 1px solid rgba(245, 158, 11, 0.3);
-            padding: 6px 12px;
+            background: rgba(245, 158, 11, 0.08);
+            border: 1px solid rgba(245, 158, 11, 0.25);
+            padding: 5px 12px;
             border-radius: 20px;
-            font-size: 12px;
+            font-size: 11px;
             color: var(--accent-gold);
             font-weight: 600;
             margin-bottom: 12px;
         }
         .info-note {
-            font-size: 11px;
+            font-size: 10px;
             color: var(--text-sub);
             line-height: 1.4;
-            background: rgba(0,0,0,0.3);
-            padding: 10px;
+            background: rgba(0,0,0,0.35);
+            padding: 9px;
             border-radius: 10px;
             border-left: 2px solid var(--accent-gold);
+            position: relative;
+            z-index: 2;
+            max-width: 65%;
         }
         .scan-box {
-            margin-bottom: 14px;
+            margin-bottom: 12px;
         }
         .scan-info {
             display: flex;
             justify-content: space-between;
-            font-size: 12px;
+            font-size: 11px;
             color: var(--text-sub);
-            margin-bottom: 6px;
+            margin-bottom: 5px;
         }
         .progress-bar {
             width: 100%;
             height: 4px;
-            background: #1a1c23;
+            background: #151821;
             border-radius: 2px;
             overflow: hidden;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
         .progress-fill {
-            width: 36%;
+            width: 38%;
             height: 100%;
             background: var(--accent-gold);
             border-radius: 2px;
@@ -137,112 +168,108 @@
         }
         .action-btn {
             width: 100%;
-            background: linear-gradient(145deg, #1e212b, #13151c);
-            border: 1px solid rgba(239, 68, 68, 0.4);
+            background: linear-gradient(145deg, #181b24, #0e1017);
+            border: 1px solid rgba(239, 68, 68, 0.35);
             color: #ef4444;
-            padding: 10px;
-            border-radius: 24px;
+            padding: 9px;
+            border-radius: 22px;
             font-weight: bold;
-            font-size: 13px;
+            font-size: 12px;
             cursor: pointer;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
         }
         .search-box {
             width: 100%;
-            padding: 12px 16px;
-            border-radius: 14px;
+            padding: 11px 14px;
+            border-radius: 12px;
             border: var(--border-metallic);
-            background: var(--card-metallic);
+            background: #14161d;
             color: #fff;
-            margin-bottom: 14px;
+            margin-bottom: 12px;
             box-sizing: border-box;
-            font-size: 13px;
+            font-size: 12px;
             outline: none;
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.6);
         }
         .search-box:focus {
             border-color: var(--accent-gold);
         }
         .tabs {
             display: flex;
-            gap: 8px;
-            margin-bottom: 16px;
+            gap: 6px;
+            margin-bottom: 14px;
             overflow-x: auto;
-            padding-bottom: 4px;
+            padding-bottom: 2px;
         }
         .tab {
-            background: var(--card-metallic);
+            background: #14161d;
             border: var(--border-metallic);
             color: var(--text-sub);
-            padding: 8px 16px;
+            padding: 7px 14px;
             border-radius: 20px;
             cursor: pointer;
             font-weight: 600;
-            font-size: 12px;
+            font-size: 11px;
             white-space: nowrap;
-            transition: 0.2s;
         }
         .tab.active {
             background: var(--accent-gold);
             color: #000;
             border-color: var(--accent-gold);
-            box-shadow: 0 0 12px rgba(245, 158, 11, 0.4);
+            box-shadow: 0 0 10px rgba(245, 158, 11, 0.3);
         }
         .table-header {
             display: flex;
             justify-content: space-between;
-            font-size: 11px;
+            font-size: 10px;
             color: var(--text-sub);
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             padding: 0 4px;
         }
         .token-card {
             background: var(--card-metallic);
-            border-radius: 14px;
-            padding: 12px;
-            margin-bottom: 8px;
+            border-radius: 12px;
+            padding: 10px 12px;
+            margin-bottom: 6px;
             border: var(--border-metallic);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
         }
         .token-left {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
         }
         .token-idx {
-            font-size: 12px;
+            font-size: 11px;
             color: var(--text-sub);
-            width: 16px;
+            width: 14px;
             text-align: center;
         }
         .star-icon {
             color: #475569;
-            font-size: 14px;
+            font-size: 13px;
             cursor: pointer;
         }
         .token-logo {
-            width: 32px;
-            height: 32px;
-            background: linear-gradient(135deg, #2a2e3d, #15171f);
+            width: 28px;
+            height: 28px;
+            background: radial-gradient(circle, #252a38 0%, #111319 100%);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: bold;
-            font-size: 11px;
+            font-weight: 800;
+            font-size: 10px;
             color: var(--accent-gold);
-            border: 1px solid rgba(255,255,255,0.1);
+            border: 1px solid rgba(245,158,11,0.3);
         }
-        .token-name { font-weight: bold; font-size: 13px; }
-        .token-sub { font-size: 11px; color: var(--text-sub); }
+        .token-name { font-weight: bold; font-size: 12px; }
+        .token-sub { font-size: 10px; color: var(--text-sub); }
         .token-price-box { text-align: right; }
-        .token-price { font-weight: bold; font-size: 13px; }
-        .token-change { font-size: 11px; font-weight: 600; }
+        .token-price { font-weight: bold; font-size: 12px; }
+        .token-change { font-size: 10px; font-weight: 600; }
         .connect-wallet-container {
-            margin-top: 16px;
+            margin-top: 14px;
             text-align: center;
         }
         .connect-wallet-btn {
@@ -250,12 +277,12 @@
             color: #000;
             border: none;
             width: 100%;
-            padding: 12px;
-            border-radius: 14px;
+            padding: 11px;
+            border-radius: 12px;
             font-weight: bold;
-            font-size: 14px;
+            font-size: 13px;
             cursor: pointer;
-            box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.25);
         }
     </style>
 </head>
@@ -273,6 +300,9 @@
     </div>
 
     <div class="main-card">
+        <div class="coin-emblem">
+            <div class="coin-inner-symbol">S</div>
+        </div>
         <div class="pair-label">1 SDA</div>
         <div class="main-price" id="mainSdaPrice">$403.33</div>
         <div class="main-change">↓ 3.64% · 24h</div>
@@ -280,19 +310,19 @@
             🪙 Base pair: SDA ▾
         </div>
         <div class="info-note">
-            ⚠️ SDA/USD is calculated live from a curated stablecoin pool (currently sUSDT). As this pool is not yet officially recognized on Sidra DEX, the price shown should be treated as an indicative estimate rather than a guaranteed 1:1 USD peg.
+            ⚠️ SDA/USD is calculated live from a curated stablecoin pool (currently sUSDT).
         </div>
     </div>
 
     <div class="scan-box">
         <div class="scan-info">
-            <span id="scanStatus">Scanning 32 / 89</span>
+            <span id="scanStatus">Scanning 34 / 89</span>
             <span>36%</span>
         </div>
         <div class="progress-bar">
             <div class="progress-fill" id="progressFill"></div>
         </div>
-        <button class="action-btn" id="scanToggleBtn">Stop scan</button>
+        <button class="action-btn">Stop scan</button>
     </div>
 
     <input type="text" class="search-box" id="searchInput" placeholder="🔍 Search token, e.g. FREEt">
@@ -309,9 +339,7 @@
         <span>Price (SDA) ↓</span>
     </div>
 
-    <div id="tokenListContainer">
-        <!-- Dynamic tokens injected via JS -->
-    </div>
+    <div id="tokenListContainer"></div>
 
     <div class="connect-wallet-container">
         <button class="connect-wallet-btn" id="connectWalletBtn">Kết nối ví Web3 (MetaMask)</button>
@@ -319,8 +347,8 @@
 
     <script>
         const tokens = [
-            { id: 1, name: "REGS", sub: "REGS Global", priceSda: 2.4775, usd: 979.35, change: 0.2, fav: false },
-            { id: 2, name: "GLNs", sub: "Global Logistics Network", priceSda: 2.0797, usd: 822.11, change: 2.5, fav: false },
+            { id: 1, name: "REGS", sub: "REGS Global", priceSda: 2.4781, usd: 979.60, change: 0.2, fav: false },
+            { id: 2, name: "GLNs", sub: "Global Logistics Network", priceSda: 2.0791, usd: 821.89, change: 2.5, fav: false },
             { id: 3, name: "FREEt", sub: "Freelancium", priceSda: 1.5734, usd: 621.95, change: -0.7, fav: false },
             { id: 4, name: "AIR", sub: "AirLand", priceSda: 1.4883, usd: 588.32, change: 0.1, fav: false },
             { id: 5, name: "VPM", sub: "VPM ecosystem", priceSda: 0.9273, usd: 366.58, change: 0.9, fav: false },
@@ -346,11 +374,6 @@
                 if (currentFilter === 'fav') return t.fav;
                 return true;
             });
-
-            if (filtered.length === 0) {
-                container.innerHTML = '<div style="text-align:center; color: #64748b; padding: 20px; font-size: 13px;">Không tìm thấy token phù hợp</div>';
-                return;
-            }
 
             filtered.forEach((t, index) => {
                 const changeColor = t.change >= 0 ? 'var(--green)' : 'var(--red)';
@@ -380,13 +403,9 @@
 
         window.toggleFav = function(id) {
             const tk = tokens.find(item => item.id === id);
-            if (tk) {
-                tk.fav = !tk.fav;
-                renderTokens();
-            }
+            if (tk) { tk.fav = !tk.fav; renderTokens(); }
         };
 
-        // Tab selection
         document.querySelectorAll('.tab').forEach(tab => {
             tab.addEventListener('click', (e) => {
                 document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -396,50 +415,39 @@
             });
         });
 
-        // Search listener
         document.getElementById('searchInput').addEventListener('input', (e) => {
             searchQuery = e.target.value;
             renderTokens();
         });
 
-        // Real-time price fluctuations simulation (chạy động liên tục)
+        // Real-time ticking effect
         setInterval(() => {
             tokens.forEach(t => {
                 const delta = (Math.random() - 0.49) * 0.002;
                 t.priceSda = Math.max(0.01, t.priceSda + delta);
                 t.usd += delta * 390;
             });
-            // Update main SDA price slightly
-            const mainPriceEl = document.getElementById('mainSdaPrice');
-            const randomMain = 403.33 + (Math.random() - 0.5) * 0.1;
-            mainPriceEl.innerText = '$' + randomMain.toFixed(2);
+            document.getElementById('mainSdaPrice').innerText = '$' + (403.33 + (Math.random() - 0.5) * 0.1).toFixed(2);
             renderTokens();
         }, 2000);
 
-        // Scanning progress simulation
-        let scanCount = 32;
+        let scanCount = 34;
         setInterval(() => {
             scanCount = scanCount >= 89 ? 32 : scanCount + 1;
-            const percent = Math.round((scanCount / 89) * 100);
             document.getElementById('scanStatus').innerText = `Scanning ${scanCount} / 89`;
-            document.getElementById('progressFill').style.width = percent + '%';
+            document.getElementById('progressFill').style.width = Math.round((scanCount / 89) * 100) + '%';
         }, 1500);
 
-        // MetaMask Connect logic
         const connectBtn = document.getElementById('connectWalletBtn');
         connectBtn.addEventListener('click', async () => {
             if (window.ethereum) {
                 try {
                     const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-                    connectBtn.innerText = 'Đã kết nối: ' + accounts[0].substring(0, 6) + '...' + accounts[0].substring(38);
+                    connectBtn.innerText = 'Đã kết nối: ' + accounts[0].substring(0, 6) + '...';
                     connectBtn.style.background = 'var(--green)';
                     connectBtn.style.color = '#fff';
-                } catch (err) {
-                    alert('Người dùng đã từ chối kết nối ví.');
-                }
-            } else {
-                alert('Vui lòng mở ứng dụng trong ví Web3 hoặc trình duyệt hỗ trợ MetaMask!');
-            }
+                } catch (err) { alert('Từ chối kết nối ví.'); }
+            } else { alert('Vui lòng mở trong ví Web3 hoặc MetaMask!'); }
         });
 
         renderTokens();
