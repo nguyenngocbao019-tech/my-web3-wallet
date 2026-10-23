@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Web3 Wallet</title>
+    <!-- Thư viện Ethers.js để tương tác với blockchain -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            text-align: center; 
+            margin-top: 80px; 
+            background: #0f172a; 
+            color: #fff; 
+        }
+        .card {
+            background: #1e293b;
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+        button { 
+            padding: 12px 24px; 
+            font-size: 16px; 
+            background: #3b82f6; 
+            color: white; 
+            border: none; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            font-weight: bold;
+        }
+        button:hover { background: #2563eb; }
+        #walletAddress { 
+            margin-top: 20px; 
+            word-break: break-all; 
+            font-size: 14px;
+            color: #38bdf8;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>🚀 My Web3 Wallet</h1>
+        <p>Ứng dụng ví Web3 bảo mật và đơn giản</p>
+        <br>
+        <button id="connectBtn">Kết nối ví</button>
+        <div id="walletAddress"></div>
+    </div>
+
+    <script>
+        const connectBtn = document.getElementById('connectBtn');
+        const walletAddressDiv = document.getElementById('walletAddress');
+
+        connectBtn.addEventListener('click', async () => {
+            if (window.ethereum) {
+                try {
+                    // Yêu cầu kết nối ví (MetaMask / Trợ giúp Web3)
+                    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                    const account = accounts[0];
+                    walletAddressDiv.innerHTML = `<strong>Đã kết nối thành công!</strong><br><br>${account}`;
+                    connectBtn.innerText = 'Đã kết nối';
+                    connectBtn.style.background = '#10b981';
+                } catch (error) {
+                    console.error(error);
+                    alert('Bạn đã từ chối kết nối ví!');
+                }
+            } else {
+                alert('Vui lòng mở ứng dụng bằng trình duyệt có hỗ trợ Web3 hoặc cài đặt ví MetaMask!');
+            }
+        });
+    </script>
+</body>
+</html>
