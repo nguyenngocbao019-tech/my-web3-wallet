@@ -3,21 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Sidra Pi Ecosystem - Super App</title>
+    <title>Pi Super App - Siêu Ứng Dụng TMĐT Đa Tầng</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Supabase SDK cho Web Động -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        ocean: {
-                            50: '#f0f9ff',
-                            100: '#e0f2fe',
-                            500: '#0284c7',
-                            600: '#0284c7',
-                            700: '#0369a1',
-                            900: '#0c4a6e'
+                        emeraldTheme: {
+                            50: '#ecfdf5',
+                            100: '#d1fae5',
+                            500: '#10b981',
+                            600: '#059669',
+                            700: '#047857'
+                        },
+                        vibrantOrange: {
+                            500: '#f97316',
+                            600: '#ea580c'
                         }
                     }
                 }
@@ -27,30 +32,31 @@
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* Tối ưu hiệu ứng cuộn & chuyển cảnh mượt như App Studio */
         body { -webkit-tap-highlight-color: transparent; user-select: none; font-family: system-ui, -apple-system, sans-serif; }
-        .view-screen { display: none; opacity: 0; transition: opacity 0.25s ease-in-out, transform 0.25s ease-in-out; transform: translateY(8px); }
-        .view-screen.active { display: block; opacity: 1; transform: translateY(0); }
+        .view-screen { display: none; opacity: 0; transition: opacity 0.2s ease-in-out; }
+        .view-screen.active { display: block; opacity: 1; }
         .touch-action { touch-action: manipulation; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
-        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-800 pb-20">
 
     <!-- HEADER / THANH TIÊU ĐỀ -->
-    <header class="sticky top-0 z-40 bg-ocean-600 text-white shadow-md">
+    <header class="sticky top-0 z-40 bg-emeraldTheme-600 text-white shadow-md">
         <div class="max-w-md mx-auto px-4 py-3 flex items-center justify-between">
             <div class="flex items-center gap-2">
                 <button id="btn-back" onclick="goBack()" class="hidden text-white p-1 touch-action">
                     <i class="fa-solid fa-arrow-left text-xl"></i>
                 </button>
-                <h1 id="app-title" class="font-bold text-lg tracking-wide">Ocean Pi Market</h1>
+                <h1 id="header-title" class="font-bold text-lg tracking-wide">Pi Super Hub</h1>
             </div>
-            <div class="flex items-center gap-3">
-                <button onclick="openWalletModal()" class="bg-ocean-700 hover:bg-ocean-900 text-xs px-2.5 py-1.5 rounded-full flex items-center gap-1 border border-ocean-500 touch-action">
+            <div class="flex items-center gap-2">
+                <button onclick="openFilterModal()" class="bg-emeraldTheme-700 hover:bg-emeraldTheme-900 text-xs px-2.5 py-1.5 rounded-full flex items-center gap-1 border border-emeraldTheme-500 touch-action">
+                    <i class="fa-solid fa-filter text-vibrantOrange-500"></i> Lọc
+                </button>
+                <button onclick="switchTab('profile')" class="bg-emeraldTheme-700 hover:bg-emeraldTheme-900 text-xs px-2.5 py-1.5 rounded-full flex items-center gap-1 border border-emeraldTheme-500 touch-action">
                     <i class="fa-solid fa-wallet text-amber-300"></i>
-                    <span id="wallet-status">Chưa nối ví</span>
+                    <span id="wallet-status">Nối ví</span>
                 </button>
             </div>
         </div>
@@ -59,407 +65,615 @@
     <!-- CONTAINER CHÍNH -->
     <main class="max-w-md mx-auto px-4 pt-3">
 
-        <!-- 1. MÀN HÌNH TRANG CHỦ & DANH MỤC (HOME VIEW) -->
+        <!-- 1. MÀN HÌNH TRANG CHỦ & HỆ THỐNG DANH MỤC ĐA DỊCH VỤ -->
         <section id="view-home" class="view-screen active">
-            <!-- Banner chào mừng -->
-            <div class="bg-gradient-to-r from-ocean-600 to-ocean-800 rounded-2xl p-4 text-white shadow-lg mb-5">
-                <p class="text-xs text-ocean-100 font-medium">Hệ sinh thái Bất động sản & Sản phẩm</p>
-                <h2 class="text-xl font-bold mt-0.5">Trao đổi Pi Network</h2>
-                <p class="text-xs text-ocean-100 mt-2 opacity-90"><i class="fa-solid fa-shield-halved"></i> Giao dịch an toàn - Trực tiếp qua Ví Pi</p>
+            <!-- Banner phối màu Xanh Ngọc & Cam Sinh Động -->
+            <div class="bg-gradient-to-r from-emeraldTheme-600 via-teal-600 to-vibrantOrange-500 rounded-2xl p-4 text-white shadow-md mb-4">
+                <div class="flex items-center justify-between">
+                    <span class="text-[10px] bg-white/20 backdrop-blur-sm text-white font-bold px-2 py-0.5 rounded-full"><i class="fa-solid fa-shield-halved"></i> Đã xác minh Web3</span>
+                    <span id="cloud-status" class="text-[10px] bg-amber-300 text-slate-900 font-bold px-2 py-0.5 rounded-full shadow-sm">Cloud Ready</span>
+                </div>
+                <h2 class="text-xl font-bold mt-2">Siêu Thị Thương Mại Pi Network</h2>
+                <p class="text-xs text-emeraldTheme-50 mt-1 opacity-95">Kết nối hàng triệu Pionner - Giao dịch đa nền tảng</p>
             </div>
 
-            <!-- DANH MỤC BẤT BẰNG & SẢN PHẨM (MỞ SÂU) -->
+            <!-- DANH MỤC HỆ SINH THÁI ĐA DỊCH VỤ (8 MỤC) -->
             <div class="flex items-center justify-between mb-3">
-                <h3 class="font-bold text-slate-800 text-base">Danh mục dịch vụ</h3>
+                <h3 class="font-bold text-slate-800 text-base">Hệ sinh thái dịch vụ</h3>
+                <span class="text-xs text-vibrantOrange-500 font-bold cursor-pointer" onclick="openCategory('Tất cả danh mục', 'all')">Xem tất cả</span>
             </div>
-            <div class="grid grid-cols-3 gap-3 mb-6">
-                <button onclick="openCategory('Bất động sản', 'realestate')" class="bg-white p-3 rounded-xl shadow-sm border border-slate-100 flex flex-col items-center justify-center hover:border-ocean-500 transition touch-action">
-                    <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center text-xl mb-1.5"><i class="fa-solid fa-city"></i></div>
-                    <span class="text-xs font-semibold text-slate-700">Bất động sản</span>
+            
+            <div class="grid grid-cols-4 gap-2 mb-5">
+                <button onclick="openCategory('Chợ Hàng Hóa', 'goods')" class="bg-white p-2.5 rounded-2xl shadow-sm border border-slate-100 flex flex-col items-center justify-center hover:border-emeraldTheme-500 transition touch-action">
+                    <div class="w-10 h-10 bg-emeraldTheme-50 text-emeraldTheme-600 rounded-xl flex items-center justify-center text-base mb-1 shadow-inner"><i class="fa-solid fa-basket-shopping"></i></div>
+                    <span class="text-[10px] font-bold text-slate-700 text-center truncate w-full">Hàng Hóa</span>
                 </button>
-                <button onclick="openCategory('Xe cộ', 'vehicles')" class="bg-white p-3 rounded-xl shadow-sm border border-slate-100 flex flex-col items-center justify-center hover:border-ocean-500 transition touch-action">
-                    <div class="w-12 h-12 bg-amber-50 text-amber-600 rounded-full flex items-center justify-center text-xl mb-1.5"><i class="fa-solid fa-car"></i></div>
-                    <span class="text-xs font-semibold text-slate-700">Xe cộ</span>
+                <button onclick="openCategory('Bất Động Sản', 'realestate')" class="bg-white p-2.5 rounded-2xl shadow-sm border border-slate-100 flex flex-col items-center justify-center hover:border-emeraldTheme-500 transition touch-action">
+                    <div class="w-10 h-10 bg-orange-50 text-vibrantOrange-500 rounded-xl flex items-center justify-center text-base mb-1 shadow-inner"><i class="fa-solid fa-city"></i></div>
+                    <span class="text-[10px] font-bold text-slate-700 text-center truncate w-full">BĐS</span>
                 </button>
-                <button onclick="openCategory('Chợ hàng hóa', 'goods')" class="bg-white p-3 rounded-xl shadow-sm border border-slate-100 flex flex-col items-center justify-center hover:border-ocean-500 transition touch-action">
-                    <div class="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center text-xl mb-1.5"><i class="fa-solid fa-basket-shopping"></i></div>
-                    <span class="text-xs font-semibold text-slate-700">Chợ hàng hóa</span>
+                <button onclick="openCategory('Xe Cộ', 'vehicles')" class="bg-white p-2.5 rounded-2xl shadow-sm border border-slate-100 flex flex-col items-center justify-center hover:border-emeraldTheme-500 transition touch-action">
+                    <div class="w-10 h-10 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center text-base mb-1 shadow-inner"><i class="fa-solid fa-car-side"></i></div>
+                    <span class="text-[10px] font-bold text-slate-700 text-center truncate w-full">Xe Cộ</span>
                 </button>
-                <button onclick="openCategory('Dịch vụ', 'services')" class="bg-white p-3 rounded-xl shadow-sm border border-slate-100 flex flex-col items-center justify-center hover:border-ocean-500 transition touch-action">
-                    <div class="w-12 h-12 bg-purple-50 text-purple-600 rounded-full flex items-center justify-center text-xl mb-1.5"><i class="fa-solid fa-handshake-angle"></i></div>
-                    <span class="text-xs font-semibold text-slate-700">Dịch vụ</span>
+                <button onclick="openCategory('Dịch Vụ & Việc Làm', 'services')" class="bg-white p-2.5 rounded-2xl shadow-sm border border-slate-100 flex flex-col items-center justify-center hover:border-emeraldTheme-500 transition touch-action">
+                    <div class="w-10 h-10 bg-purple-50 text-purple-600 rounded-xl flex items-center justify-center text-base mb-1 shadow-inner"><i class="fa-solid fa-briefcase"></i></div>
+                    <span class="text-[10px] font-bold text-slate-700 text-center truncate w-full">Việc Làm</span>
                 </button>
-                <button onclick="openCategory('Đấu giá', 'auction')" class="bg-white p-3 rounded-xl shadow-sm border border-slate-100 flex flex-col items-center justify-center hover:border-ocean-500 transition touch-action">
-                    <div class="w-12 h-12 bg-rose-50 text-rose-600 rounded-full flex items-center justify-center text-xl mb-1.5"><i class="fa-solid fa-gavel"></i></div>
-                    <span class="text-xs font-semibold text-slate-700">Đấu giá Pi</span>
+                <button onclick="openCategory('Đấu Giá Pi', 'auction')" class="bg-white p-2.5 rounded-2xl shadow-sm border border-slate-100 flex flex-col items-center justify-center hover:border-emeraldTheme-500 transition touch-action">
+                    <div class="w-10 h-10 bg-rose-50 text-rose-600 rounded-xl flex items-center justify-center text-base mb-1 shadow-inner"><i class="fa-solid fa-gavel"></i></div>
+                    <span class="text-[10px] font-bold text-slate-700 text-center truncate w-full">Đấu Giá</span>
                 </button>
-                <button onclick="openCategory('Tất cả', 'all')" class="bg-white p-3 rounded-xl shadow-sm border border-slate-100 flex flex-col items-center justify-center hover:border-ocean-500 transition touch-action">
-                    <div class="w-12 h-12 bg-slate-100 text-slate-600 rounded-full flex items-center justify-center text-xl mb-1.5"><i class="fa-solid fa-border-all"></i></div>
-                    <span class="text-xs font-semibold text-slate-700">Xem tất cả</span>
+                <button onclick="openCategory('Tin Tức & Diễn Đàn', 'forum')" class="bg-white p-2.5 rounded-2xl shadow-sm border border-slate-100 flex flex-col items-center justify-center hover:border-emeraldTheme-500 transition touch-action">
+                    <div class="w-10 h-10 bg-cyan-50 text-cyan-600 rounded-xl flex items-center justify-center text-base mb-1 shadow-inner"><i class="fa-solid fa-newspaper"></i></div>
+                    <span class="text-[10px] font-bold text-slate-700 text-center truncate w-full">Diễn Đàn</span>
+                </button>
+                <button onclick="openCategory('Đồ Sưu Tầm', 'antiques')" class="bg-white p-2.5 rounded-2xl shadow-sm border border-slate-100 flex flex-col items-center justify-center hover:border-emeraldTheme-500 transition touch-action">
+                    <div class="w-10 h-10 bg-amber-50 text-amber-600 rounded-xl flex items-center justify-center text-base mb-1 shadow-inner"><i class="fa-solid fa-gem"></i></div>
+                    <span class="text-[10px] font-bold text-slate-700 text-center truncate w-full">Sưu Tầm</span>
+                </button>
+                <button onclick="openCategory('Tất cả dịch vụ', 'all')" class="bg-white p-2.5 rounded-2xl shadow-sm border border-slate-100 flex flex-col items-center justify-center hover:border-emeraldTheme-500 transition touch-action">
+                    <div class="w-10 h-10 bg-slate-100 text-slate-600 rounded-xl flex items-center justify-center text-base mb-1 shadow-inner"><i class="fa-solid fa-border-all"></i></div>
+                    <span class="text-[10px] font-bold text-slate-700 text-center truncate w-full">Xem Thêm</span>
                 </button>
             </div>
 
-            <!-- BÀI ĐĂNG NỔI BẬT -->
             <div class="flex items-center justify-between mb-3">
-                <h3 class="font-bold text-slate-800 text-base">Tin nổi bật</h3>
+                <h3 class="font-bold text-slate-800 text-base">Sản phẩm mới nhất</h3>
+                <button onclick="loadListingsData()" class="text-xs text-emeraldTheme-600 font-bold"><i class="fa-solid fa-rotate"></i> Tải lại</button>
             </div>
-            <div id="home-listings-grid" class="grid grid-cols-2 gap-3">
-                <!-- Javascript sẽ tự chèn tin nổi bật vào đây -->
-            </div>
+            <div id="home-listings-grid" class="grid grid-cols-2 gap-3 mb-6"></div>
         </section>
 
-        <!-- 2. MÀN HÌNH DANH SÁCH SẢN PHẨM / KHI BẤM DANH MỤC (LIST VIEW) -->
+        <!-- 2. MÀN HÌNH DANH SÁCH DANH MỤC -->
         <section id="view-list" class="view-screen">
             <div class="flex items-center justify-between mb-3">
-                <h3 id="category-title" class="font-bold text-slate-800 text-lg">Danh sách tin</h3>
-                <span id="category-count" class="text-xs bg-ocean-100 text-ocean-700 px-2 py-1 rounded-full font-semibold">0 bài</span>
+                <h3 id="category-title" class="font-bold text-slate-800 text-lg">Danh sách sản phẩm</h3>
+                <span id="category-count" class="text-xs bg-emeraldTheme-100 text-emeraldTheme-700 px-2.5 py-1 rounded-full font-bold">0 bài</span>
             </div>
-            <div id="category-listings-grid" class="grid grid-cols-2 gap-3">
-                <!-- Đổ dữ liệu danh sách sản phẩm nhiều bài -->
-            </div>
+            <div id="category-listings-grid" class="grid grid-cols-2 gap-3"></div>
         </section>
 
-        <!-- 3. MÀN HÌNH CHI TIẾT SẢN PHẨM (DETAIL VIEW) -->
+        <!-- 3. MÀN HÌNH CHI TIẾT SẢN PHẨM (CAROUSEL & LIÊN HỆ) -->
         <section id="view-detail" class="view-screen">
             <div class="bg-white rounded-2xl shadow-sm overflow-hidden border border-slate-100 mb-4">
-                <div class="relative h-60 bg-slate-200">
-                    <img id="detail-img" src="" class="w-full h-full object-cover" alt="Sản phẩm">
-                    <div class="absolute bottom-3 right-3 bg-black/60 text-white text-xs px-2.5 py-1 rounded-full backdrop-blur-sm">
-                        <i class="fa-regular fa-image"></i> 3 ảnh
-                    </div>
+                <!-- CAROUSEL ẢNH -->
+                <div class="relative h-64 bg-slate-900">
+                    <img id="detail-img" src="" class="w-full h-full object-cover" alt="Ảnh sản phẩm">
+                    <span id="detail-badge" class="absolute top-3 left-3 bg-vibrantOrange-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow">Sản phẩm nổi bật</span>
                 </div>
+                <div id="detail-gallery" class="flex gap-2 p-2 overflow-x-auto no-scrollbar bg-slate-50 border-t border-slate-100"></div>
+                
                 <div class="p-4">
                     <div class="flex items-center justify-between gap-2 mb-1">
-                        <span id="detail-category" class="text-[10px] font-bold text-ocean-600 bg-ocean-50 uppercase tracking-wider px-2 py-0.5 rounded">Bất động sản</span>
-                        <span id="detail-date" class="text-xs text-slate-400">Vừa đăng</span>
+                        <span id="detail-category" class="text-[10px] font-bold text-emeraldTheme-600 bg-emeraldTheme-50 uppercase tracking-wider px-2 py-0.5 rounded">Danh mục</span>
+                        <span class="text-xs text-slate-400"><i class="fa-solid fa-location-dot text-vibrantOrange-500"></i> <span id="detail-location">Cần Thơ, VN</span></span>
                     </div>
-                    <h2 id="detail-title" class="text-lg font-bold text-slate-800 leading-snug mb-2">Biệt thự Đà Lạt view thung lũng</h2>
+                    <h2 id="detail-title" class="text-lg font-bold text-slate-800 leading-snug mb-2">Tiêu đề</h2>
                     <div class="flex items-baseline gap-1 mb-3">
-                        <span id="detail-price" class="text-2xl font-extrabold text-ocean-600">350</span>
+                        <span id="detail-price" class="text-2xl font-extrabold text-emeraldTheme-600">0</span>
                         <span class="text-sm font-bold text-amber-500">π (Pi)</span>
                     </div>
-                    <div class="border-t border-slate-100 pt-3 mt-3">
-                        <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wide mb-1">Mô tả sản phẩm</h4>
-                        <p id="detail-desc" class="text-sm text-slate-600 leading-relaxed">Thông tin mô tả đầy đủ...</p>
+
+                    <!-- THÔNG TIN RIÊNG CHO BĐS / XE CỘ -->
+                    <div id="detail-specs" class="grid grid-cols-2 gap-2 p-2.5 bg-slate-50 rounded-xl mb-3 text-xs border border-slate-100 hidden">
+                        <div><span class="text-slate-400">Diện tích:</span> <strong id="spec-area" class="text-slate-700">--</strong></div>
+                        <div><span class="text-slate-400">Số phòng:</span> <strong id="spec-rooms" class="text-slate-700">--</strong></div>
                     </div>
-                    <div class="border-t border-slate-100 pt-3 mt-3">
-                        <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wide mb-1">Địa chỉ Ví người bán</h4>
-                        <div class="bg-slate-50 p-2.5 rounded-lg border border-slate-200 flex items-center justify-between">
-                            <span id="detail-wallet" class="text-xs font-mono text-slate-600 truncate pr-2">G.......................................................</span>
-                            <button onclick="copySellerWallet()" class="text-xs bg-white text-ocean-600 border border-ocean-200 px-2 py-1 rounded hover:bg-ocean-50 touch-action">Copy</button>
+
+                    <div class="border-t border-slate-100 pt-3">
+                        <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wide mb-1">Mô tả chi tiết</h4>
+                        <p id="detail-desc" class="text-sm text-slate-600 leading-relaxed">...</p>
+                    </div>
+
+                    <!-- THÔNG TIN NGƯỜI BÁN (CLICK VÀO ĐỂ XEM SHOP PROFILE) -->
+                    <div class="border-t border-slate-100 pt-3 mt-3 cursor-pointer hover:bg-slate-50 p-2 rounded-xl transition" onclick="openSellerProfile()">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <div id="seller-avatar" class="w-10 h-10 bg-emeraldTheme-100 text-emeraldTheme-700 rounded-full flex items-center justify-center font-bold text-base">S</div>
+                                <div>
+                                    <h4 id="seller-name" class="text-xs font-bold text-slate-800">Cửa hàng Người Bán</h4>
+                                    <p class="text-[10px] text-amber-500"><i class="fa-solid fa-star"></i> <span id="seller-rating">4.9 / 5.0</span> (Uy tín Web3)</p>
+                                </div>
+                            </div>
+                            <span class="text-xs text-emeraldTheme-600 font-bold">Xem Shop <i class="fa-solid fa-chevron-right text-[10px]"></i></span>
                         </div>
+                    </div>
+
+                    <!-- NÚT CHỈNH SỬA KHI LÀ CHỦ BÀI -->
+                    <div id="owner-actions" class="mt-3 pt-3 border-t border-slate-100 hidden">
+                        <button onclick="openEditScreen()" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-bold py-2 rounded-xl text-xs flex items-center justify-center gap-1.5 touch-action">
+                            <i class="fa-solid fa-pen-to-square"></i> Chỉnh sửa bài đăng này
+                        </button>
                     </div>
                 </div>
             </div>
-
-            <!-- NÚT THANH TOÁN -->
             <div class="flex gap-2">
-                <button onclick="handlePayment('Pi')" class="flex-1 bg-ocean-600 hover:bg-ocean-700 text-white font-bold py-3 px-4 rounded-xl shadow-md flex items-center justify-center gap-2 touch-action">
-                    <i class="fa-brands fa-brands fa-pi font-bold text-amber-300"></i> Thanh toán bằng Ví Pi
+                <button onclick="handlePayment('Pi')" class="flex-1 bg-emeraldTheme-600 hover:bg-emeraldTheme-700 text-white font-bold py-3 px-4 rounded-xl shadow-md flex items-center justify-center gap-2 touch-action">
+                    <i class="fa-brands fa-pi text-amber-300"></i> Thanh toán Ví Pi
                 </button>
-                <button onclick="handlePayment('COD')" class="flex-1 bg-slate-700 hover:bg-slate-800 text-white font-bold py-3 px-4 rounded-xl shadow-md flex items-center justify-center gap-2 touch-action">
-                    <i class="fa-solid fa-truck"></i> Thanh toán COD
+                <button onclick="handlePayment('COD')" class="flex-1 bg-vibrantOrange-500 hover:bg-vibrantOrange-600 text-white font-bold py-3 px-4 rounded-xl shadow-md flex items-center justify-center gap-2 touch-action">
+                    <i class="fa-solid fa-handshake"></i> Thanh toán COD
                 </button>
             </div>
         </section>
 
-        <!-- 4. MÀN HÌNH ĐĂNG TIN MỚI (CREATE LISTING VIEW) -->
+        <!-- 4. MÀN HÌNH CỬA HÀNG NGƯỜI BÁN (SHOP PROFILE) -->
+        <section id="view-shop" class="view-screen">
+            <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 mb-4 text-center">
+                <div id="shop-avatar-lg" class="w-20 h-20 bg-emeraldTheme-100 text-emeraldTheme-700 rounded-full flex items-center justify-center text-3xl font-bold mx-auto mb-2 border-2 border-emeraldTheme-500">S</div>
+                <h2 id="shop-name-lg" class="font-bold text-slate-800 text-lg">Tên Cửa Hàng</h2>
+                <p class="text-xs text-slate-400 mb-2">Đã KYC & Xác minh Ví Pi</p>
+                <div class="inline-flex items-center gap-1 bg-amber-50 text-amber-700 text-xs px-3 py-1 rounded-full font-bold border border-amber-200">
+                    <i class="fa-solid fa-award text-amber-500"></i> Điểm uy tín: <span id="shop-score">98/100</span>
+                </div>
+            </div>
+
+            <h3 class="font-bold text-slate-800 text-base mb-3">Sản phẩm cùng người bán</h3>
+            <div id="shop-listings-grid" class="grid grid-cols-2 gap-3"></div>
+        </section>
+
+        <!-- 5. MÀN HÌNH ĐĂNG TIN MỚI -->
         <section id="view-create" class="view-screen">
             <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
-                <h2 class="text-lg font-bold text-slate-800 mb-4">Đăng sản phẩm/Tin bán mới</h2>
+                <h2 class="text-lg font-bold text-slate-800 mb-4">Đăng sản phẩm / Dịch vụ mới</h2>
                 <form id="form-create" onsubmit="submitNewListing(event)">
                     <div class="mb-3">
-                        <label class="block text-xs font-bold text-slate-600 mb-1">Tiêu đề bài đăng</label>
-                        <input type="text" id="inp-title" required placeholder="Ví dụ: Xe Mazda CX-5 chính chủ" class="w-full text-sm p-2.5 border border-slate-200 rounded-lg focus:outline-none focus:border-ocean-500">
+                        <label class="block text-xs font-bold text-slate-600 mb-1">Tên bài đăng</label>
+                        <input type="text" id="inp-title" required placeholder="Nhập tiêu đề rõ ràng..." class="w-full text-sm p-2.5 border border-slate-200 rounded-xl focus:outline-none focus:border-emeraldTheme-500">
                     </div>
                     <div class="mb-3">
                         <label class="block text-xs font-bold text-slate-600 mb-1">Chọn Danh mục</label>
-                        <select id="inp-category" class="w-full text-sm p-2.5 border border-slate-200 rounded-lg focus:outline-none focus:border-ocean-500">
-                            <option value="realestate">Bất động sản</option>
-                            <option value="vehicles">Xe cộ</option>
-                            <option value="goods">Chợ hàng hóa</option>
-                            <option value="services">Dịch vụ</option>
-                            <option value="auction">Đấu giá Pi</option>
+                        <select id="inp-category" class="w-full text-sm p-2.5 border border-slate-200 rounded-xl focus:outline-none focus:border-emeraldTheme-500">
+                            <option value="goods">Chợ Hàng Hóa</option>
+                            <option value="realestate">Bất Động Sản</option>
+                            <option value="vehicles">Xe Cộ</option>
+                            <option value="services">Dịch Vụ & Việc Làm</option>
+                            <option value="auction">Đấu Giá Pi</option>
+                            <option value="forum">Tin Tức & Diễn Đàn</option>
+                            <option value="antiques">Đồ Sưu Tầm</option>
                         </select>
                     </div>
                     <div class="mb-3">
                         <label class="block text-xs font-bold text-slate-600 mb-1">Giá bán (Pi)</label>
-                        <input type="number" step="0.01" id="inp-price" required placeholder="Nhập số Pi" class="w-full text-sm p-2.5 border border-slate-200 rounded-lg focus:outline-none focus:border-ocean-500">
+                        <input type="number" step="0.001" id="inp-price" required placeholder="Số Pi" class="w-full text-sm p-2.5 border border-slate-200 rounded-xl focus:outline-none focus:border-emeraldTheme-500">
                     </div>
                     <div class="mb-3">
-                        <label class="block text-xs font-bold text-slate-600 mb-1">Đường dẫn ảnh (Unsplash/URL)</label>
-                        <input type="url" id="inp-img" placeholder="https://images.unsplash.com/..." class="w-full text-sm p-2.5 border border-slate-200 rounded-lg focus:outline-none focus:border-ocean-500">
+                        <label class="block text-xs font-bold text-slate-600 mb-1">Chọn nhiều ảnh từ thiết bị</label>
+                        <input type="file" id="inp-files" multiple accept="image/*" class="w-full text-xs p-2.5 border border-slate-200 rounded-xl bg-slate-50 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-emeraldTheme-50 file:text-emeraldTheme-700">
                     </div>
                     <div class="mb-4">
                         <label class="block text-xs font-bold text-slate-600 mb-1">Mô tả chi tiết</label>
-                        <textarea id="inp-desc" rows="3" required placeholder="Nhập tình trạng sản phẩm, địa chỉ, số điện thoại..." class="w-full text-sm p-2.5 border border-slate-200 rounded-lg focus:outline-none focus:border-ocean-500"></textarea>
+                        <textarea id="inp-desc" rows="3" required placeholder="Tình trạng, quy cách, giao dịch..." class="w-full text-sm p-2.5 border border-slate-200 rounded-xl focus:outline-none focus:border-emeraldTheme-500"></textarea>
                     </div>
-                    <button type="submit" class="w-full bg-ocean-600 hover:bg-ocean-700 text-white font-bold py-3 rounded-xl shadow-md touch-action">Đăng ngay</button>
+                    <button type="submit" class="w-full bg-emeraldTheme-600 hover:bg-emeraldTheme-700 text-white font-bold py-3 rounded-xl shadow-md touch-action">Đăng Bài Ngay</button>
                 </form>
             </div>
         </section>
 
-        <!-- 5. MÀN HÌNH TRANG CÁ NHÂN & DÁN VÍ (PROFILE VIEW) -->
+        <!-- 6. MÀN HÌNH QUẢN LÝ ĐƠN HÀNG (ORDER DETAILS WITH TxID) -->
+        <section id="view-orders" class="view-screen">
+            <h2 class="font-bold text-slate-800 text-lg mb-3">Lịch sử Đơn hàng</h2>
+            <div id="orders-list" class="space-y-3">
+                <!-- Dữ liệu đơn hàng được tạo tự động -->
+            </div>
+        </section>
+
+        <!-- 7. MÀN HÌNH CÁ NHÂN & VÍ PI chuẩn chữ G (56 ký tự) -->
         <section id="view-profile" class="view-screen">
             <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 mb-4 text-center">
-                <div class="w-16 h-16 bg-ocean-100 text-ocean-600 rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-2">
-                    <i class="fa-solid fa-user"></i>
+                <div class="w-16 h-16 bg-emeraldTheme-100 text-emeraldTheme-700 rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-2 border border-emeraldTheme-500">
+                    <i class="fa-solid fa-user-shield"></i>
                 </div>
-                <h2 id="profile-name" class="font-bold text-slate-800 text-base">Thành viên Pi Network</h2>
-                <p class="text-xs text-slate-400">Tài khoản chính thức</p>
+                <h2 class="font-bold text-slate-800 text-base">Thành viên Pi Network</h2>
+                <p class="text-xs text-slate-400">Tài khoản Web3 đã kích hoạt</p>
             </div>
 
-            <!-- Ô CẤU HÌNH ĐỊA CHỈ VÍ PI G-ADDRESS (56 KÝ TỰ) -->
+            <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 mb-4">
+                <h3 class="font-bold text-slate-800 text-sm mb-1"><i class="fa-solid fa-wallet text-emeraldTheme-600"></i> My Pi Wallet Address</h3>
+                <p class="text-[11px] text-slate-500 mb-3">Địa chỉ ví công khai bắt đầu bằng chữ **G** dài đúng 56 ký tự.</p>
+                <input type="text" id="user-wallet-input" maxlength="56" placeholder="GXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" class="w-full font-mono text-xs p-3 border border-slate-200 rounded-xl mb-3 bg-slate-50 focus:outline-none focus:border-emeraldTheme-500">
+                <button onclick="saveUserWallet()" class="w-full bg-emeraldTheme-600 hover:bg-emeraldTheme-700 text-white font-bold py-2.5 rounded-xl shadow touch-action text-sm">Lưu Địa Chỉ Ví</button>
+            </div>
+
+            <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 space-y-2">
+                <button onclick="openSupportCenter()" class="w-full flex items-center justify-between p-2.5 hover:bg-slate-50 rounded-xl transition touch-action">
+                    <span class="text-xs font-bold text-slate-700"><i class="fa-solid fa-headset text-emeraldTheme-600 mr-2"></i> Trung tâm hỗ trợ</span>
+                    <i class="fa-solid fa-chevron-right text-xs text-slate-400"></i>
+                </button>
+                <button onclick="openSafetyRules()" class="w-full flex items-center justify-between p-2.5 hover:bg-slate-50 rounded-xl transition touch-action">
+                    <span class="text-xs font-bold text-slate-700"><i class="fa-solid fa-shield-cat text-vibrantOrange-500 mr-2"></i> Quy định an toàn giao dịch</span>
+                    <i class="fa-solid fa-chevron-right text-xs text-slate-400"></i>
+                </button>
+            </div>
+        </section>
+
+        <!-- 8. TRANG CON SUPPORT / SAFETY -->
+        <section id="view-info-page" class="view-screen">
             <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
-                <h3 class="font-bold text-slate-800 text-sm mb-1"><i class="fa-solid fa-wallet text-ocean-600"></i> Địa chỉ Ví Pi của tôi</h3>
-                <p class="text-xs text-slate-500 mb-3">Dán Địa chỉ Ví công khai (bắt đầu bằng chữ **G**, 56 ký tự) để nhận Pi khi bán hàng.</p>
-                
-                <input type="text" id="user-wallet-input" maxlength="56" placeholder="GXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" class="w-full font-mono text-xs p-3 border border-slate-200 rounded-xl mb-3 focus:outline-none focus:border-ocean-500 bg-slate-50">
-                
-                <button onclick="saveUserWallet()" class="w-full bg-ocean-600 hover:bg-ocean-700 text-white font-bold py-2.5 rounded-xl shadow touch-action text-sm">Lưu Địa Chỉ Ví</button>
+                <h2 id="info-page-title" class="font-bold text-slate-800 text-lg mb-3">Tiêu đề</h2>
+                <div id="info-page-content" class="text-xs text-slate-600 leading-relaxed space-y-3"></div>
             </div>
         </section>
 
     </main>
 
-    <!-- THANH ĐIỀU HƯỚNG DƯỚI CÙNG (BOTTOM NAVIGATION BAR) -->
+    <!-- CỬA SỔ LỌC NÂNG CAO (ADVANCED FILTER MODAL) -->
+    <div id="modal-filter" class="fixed inset-0 bg-black/50 z-50 flex items-end justify-center hidden">
+        <div class="bg-white w-full max-w-md rounded-t-2xl p-4 shadow-2xl animate-slide-up">
+            <div class="flex items-center justify-between mb-4 border-b border-slate-100 pb-2">
+                <h3 class="font-bold text-slate-800 text-base">Bộ lọc nâng cao</h3>
+                <button onclick="closeFilterModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <div class="mb-3">
+                <label class="block text-xs font-bold text-slate-600 mb-1">Khoảng giá Pi (Khoảng)</label>
+                <div class="flex gap-2 items-center">
+                    <input type="number" id="filter-min-price" placeholder="Từ Pi" class="w-full text-xs p-2.5 border border-slate-200 rounded-xl">
+                    <span class="text-slate-400">-</span>
+                    <input type="number" id="filter-max-price" placeholder="Đến Pi" class="w-full text-xs p-2.5 border border-slate-200 rounded-xl">
+                </div>
+            </div>
+            <div class="mb-4">
+                <label class="block text-xs font-bold text-slate-600 mb-1">Tỉnh Thành / Quốc Gia</label>
+                <select id="filter-location" class="w-full text-xs p-2.5 border border-slate-200 rounded-xl">
+                    <option value="all">Tất cả khu vực</option>
+                    <option value="Can Tho">Cần Thơ</option>
+                    <option value="TP.HCM">TP. Hồ Chí Minh</option>
+                    <option value="Ha Noi">Hà Nội</option>
+                    <option value="Global">Toàn cầu (Global)</option>
+                </select>
+            </div>
+            <button onclick="applyAdvancedFilter()" class="w-full bg-emeraldTheme-600 hover:bg-emeraldTheme-700 text-white font-bold py-3 rounded-xl shadow touch-action">Áp dụng bộ lọc</button>
+        </div>
+    </div>
+
+    <!-- THANH ĐIỀU HƯỚNG DƯỚI CÙNG -->
     <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 z-40">
         <div class="max-w-md mx-auto flex justify-around py-2">
-            <button onclick="switchTab('home')" class="nav-btn text-ocean-600 flex flex-col items-center touch-action" id="nav-home">
+            <button onclick="switchTab('home')" class="nav-btn text-emeraldTheme-600 flex flex-col items-center touch-action" id="nav-home">
                 <i class="fa-solid fa-house text-lg"></i>
-                <span class="text-[10px] font-medium mt-0.5">Trang chủ</span>
+                <span class="text-[10px] font-bold mt-0.5">Trang chủ</span>
             </button>
             <button onclick="switchTab('create')" class="nav-btn text-slate-400 flex flex-col items-center touch-action" id="nav-create">
                 <i class="fa-solid fa-circle-plus text-lg"></i>
-                <span class="text-[10px] font-medium mt-0.5">Đăng tin</span>
+                <span class="text-[10px] font-bold mt-0.5">Đăng tin</span>
+            </button>
+            <button onclick="switchTab('orders')" class="nav-btn text-slate-400 flex flex-col items-center touch-action" id="nav-orders">
+                <i class="fa-solid fa-receipt text-lg"></i>
+                <span class="text-[10px] font-bold mt-0.5">Đơn hàng</span>
             </button>
             <button onclick="switchTab('profile')" class="nav-btn text-slate-400 flex flex-col items-center touch-action" id="nav-profile">
                 <i class="fa-solid fa-user text-lg"></i>
-                <span class="text-[10px] font-medium mt-0.5">Cá nhân</span>
+                <span class="text-[10px] font-bold mt-0.5">Cá nhân</span>
             </button>
         </div>
     </nav>
 
-    <!-- JAVASCRIPT LOGIC & ĐIỀU HƯỚNG CỬA SỔ SÂU -->
+    <!-- JAVASCRIPT ĐA TẦNG NÂNG CẤP -->
     <script>
-        // NGÂN HÀNG DỮ LIỆU MẪU ĐA DẠNG (6-10 BÀI CHO MỖI DANH MỤC)
-        const sampleListings = [
-            // Bất động sản
-            { id: 101, title: 'Biệt thự Đà Lạt view thung lũng 300m2', price: 350, category: 'realestate', categoryName: 'Bất động sản', img: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=500', desc: 'Biệt thự full nội thất gỗ cao cấp, 4 phòng ngủ, sân vườn rộng rãi.', wallet: 'GBCX7Y2Z3A4B5C6D7E8F9G0H1I2J3K4L5M6N7O8P9Q0R' },
-            { id: 102, title: 'Đất nền thổ cư Q.9 TP.HCM 100m2', price: 180, category: 'realestate', categoryName: 'Bất động sản', img: 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=500', desc: 'Sổ hồng riêng, mặt tiền đường nhựa 8m, khu dân cư đông đúc.', wallet: 'GBCX7Y2Z3A4B5C6D7E8F9G0H1I2J3K4L5M6N7O8P9Q0R' },
-            { id: 103, title: 'Căn hộ chung cư cao cấp Cần Thơ', price: 95, category: 'realestate', categoryName: 'Bất động sản', img: 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=500', desc: 'Căn hộ 2PN view sông Hậu cực đẹp, tiện ích hồ bơi gym đầy đủ.', wallet: 'GBCX7Y2Z3A4B5C6D7E8F9G0H1I2J3K4L5M6N7O8P9Q0R' },
-            { id: 104, title: 'Nhà phố thương mại Shophouse Hà Nội', price: 420, category: 'realestate', categoryName: 'Bất động sản', img: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=500', desc: 'Vị trí đắc địa kinh doanh đỉnh, 5 tầng có thang máy.', wallet: 'GBCX7Y2Z3A4B5C6D7E8F9G0H1I2J3K4L5M6N7O8P9Q0R' },
-            { id: 105, title: 'Lô đất nghỉ dưỡng ven biển Phú Quốc', price: 290, category: 'realestate', categoryName: 'Bất động sản', img: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=500', desc: 'Cách bãi tắm 200m, thích hợp làm Homestay hoặc Resort.', wallet: 'GBCX7Y2Z3A4B5C6D7E8F9G0H1I2J3K4L5M6N7O8P9Q0R' },
-            { id: 106, title: 'Nhà vườn sinh thái ven sông Đồng Nai', price: 150, category: 'realestate', categoryName: 'Bất động sản', img: 'https://images.unsplash.com/photo-1518780664697-55e3ad937233?w=500', desc: 'Có sẵn cây ăn trái, ao cá, không khí mát mẻ quanh năm.', wallet: 'GBCX7Y2Z3A4B5C6D7E8F9G0H1I2J3K4L5M6N7O8P9Q0R' },
+        const SUPABASE_URL = ''; 
+        const SUPABASE_ANON_KEY = '';
 
-            // Xe cộ
-            { id: 201, title: 'Xe Mazda CX-5 2.5 AWD 2022 trắng', price: 85, category: 'vehicles', categoryName: 'Xe cộ', img: 'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=500', desc: 'Xe gia đình đi giữ gìn, ODO 15.000km, bảo dưỡng hãng đầy đủ.', wallet: 'GBCX7Y2Z3A4B5C6D7E8F9G0H1I2J3K4L5M6N7O8P9Q0R' },
-            { id: 202, title: 'Xe điện VinFast VF8 Plus mới 99%', price: 92, category: 'vehicles', categoryName: 'Xe cộ', img: 'https://images.unsplash.com/photo-1563720223185-11003d516935?w=500', desc: 'Pin thuê, màu xám xi măng thời thượng, đăng ký chính chủ.', wallet: 'GBCX7Y2Z3A4B5C6D7E8F9G0H1I2J3K4L5M6N7O8P9Q0R' },
-            { id: 203, title: 'Xe máy Vespa Sprint ABS 125cc', price: 12, category: 'vehicles', categoryName: 'Xe cộ', img: 'https://images.unsplash.com/photo-1558981806-ec527fa84c39?w=500', desc: 'Màu vàng nhám cá tính, biển số thành phố đẹp.', wallet: 'GBCX7Y2Z3A4B5C6D7E8F9G0H1I2J3K4L5M6N7O8P9Q0R' },
-            { id: 204, title: 'Xe bán tải Ford Ranger Wildtrak', price: 68, category: 'vehicles', categoryName: 'Xe cộ', img: 'https://images.unsplash.com/photo-1533106497176-45ae6b258547?w=500', desc: 'Máy Bi-Turbo mạnh mẽ, lên sẵn nhiều đồ chơi việt dã.', wallet: 'GBCX7Y2Z3A4B5C6D7E8F9G0H1I2J3K4L5M6N7O8P9Q0R' },
-            { id: 205, title: 'Xe Honda SH 150i ABS nhập Ý', price: 25, category: 'vehicles', categoryName: 'Xe cộ', img: 'https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?w=500', desc: 'Xe cùm công tắc zin, sơn nguyên bản chưa dặm tút.', wallet: 'GBCX7Y2Z3A4B5C6D7E8F9G0H1I2J3K4L5M6N7O8P9Q0R' },
-            { id: 206, title: 'Xe thể thao Toyota GR Supra', price: 210, category: 'vehicles', categoryName: 'Xe cộ', img: 'https://images.unsplash.com/photo-1617814076367-b759c7d7e738?w=500', desc: 'Bản độ thể thao độc nhất, màu đỏ rực rỡ.', wallet: 'GBCX7Y2Z3A4B5C6D7E8F9G0H1I2J3K4L5M6N7O8P9Q0R' },
-
-            // Chợ hàng hóa
-            { id: 301, title: 'Bình gốm sứ cổ hoa văn xanh', price: 2.5, category: 'goods', categoryName: 'Chợ hàng hóa', img: 'https://images.unsplash.com/photo-1578749556568-bc2c40e68b61?w=500', desc: 'Gốm thủ công chế tác tinh xảo, thích hợp sưu tầm trưng bày.', wallet: 'GBCX7Y2Z3A4B5C6D7E8F9G0H1I2J3K4L5M6N7O8P9Q0R' },
-            { id: 302, title: 'iPhone 15 Pro Max 512GB VN/A', price: 18.5, category: 'goods', categoryName: 'Chợ hàng hóa', img: 'https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=500', desc: 'Màu Titan Tự Nhiên, pin 100%, bảo hành chính hãng dài.', wallet: 'GBCX7Y2Z3A4B5C6D7E8F9G0H1I2J3K4L5M6N7O8P9Q0R' },
-            { id: 303, title: 'Laptop MacBook Pro M3 Max 16 inch', price: 32, category: 'goods', categoryName: 'Chợ hàng hóa', img: 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=500', desc: 'RAM 36GB, SSD 1TB, máy mới fullbox chưa qua sử dụng.', wallet: 'GBCX7Y2Z3A4B5C6D7E8F9G0H1I2J3K4L5M6N7O8P9Q0R' },
-            { id: 304, title: 'Đồng hồ Thụy Sĩ Omega Seamaster', price: 45, category: 'goods', categoryName: 'Chợ hàng hóa', img: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500', desc: 'Thép không gỉ, mặt xanh lướt sóng, đầy đủ thẻ bảo hành.', wallet: 'GBCX7Y2Z3A4B5C6D7E8F9G0H1I2J3K4L5M6N7O8P9Q0R' },
-
-            // Dịch vụ
-            { id: 401, title: 'Dịch vụ Thiết kế Web / DApp Pi Network', price: 5.0, category: 'services', categoryName: 'Dịch vụ', img: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=500', desc: 'Lập trình chuẩn SDK Pi, tối ưu giao diện di động mượt mà.', wallet: 'GBCX7Y2Z3A4B5C6D7E8F9G0H1I2J3K4L5M6N7O8P9Q0R' },
-            { id: 402, title: 'Dịch vụ Dịch thuật Công chứng Anh - Việt', price: 0.5, category: 'services', categoryName: 'Dịch vụ', img: 'https://images.unsplash.com/photo-1455390582262-044cdead277a?w=500', desc: 'Dịch thuật nhanh chóng, chuẩn pháp lý hồ sơ du học, visa.', wallet: 'GBCX7Y2Z3A4B5C6D7E8F9G0H1I2J3K4L5M6N7O8P9Q0R' },
-
-            // Đấu giá Pi
-            { id: 501, title: 'Máy chơi game Retro cổ hiếm có', price: 1.2, category: 'auction', categoryName: 'Đấu giá Pi', img: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=500', desc: 'Máy nguyên bản hoạt động tốt, kèm 500 game tuổi thơ.', wallet: 'GBCX7Y2Z3A4B5C6D7E8F9G0H1I2J3K4L5M6N7O8P9Q0R' }
-        ];
-
-        // KHỞI TẠO BỘ NHỚ LƯU TRỮ CHUNG (LOCAL STORAGE SYNCRONIZATION)
-        function getCombinedListings() {
-            const userCreated = JSON.parse(localStorage.getItem('my_pi_listings') || '[]');
-            return [...userCreated, ...sampleListings];
+        let supabaseClient = null;
+        if (SUPABASE_URL && SUPABASE_ANON_KEY) {
+            supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            document.getElementById('cloud-status').innerText = 'Cloud Active';
+            document.getElementById('cloud-status').className = 'text-[10px] bg-emerald-500 text-white font-bold px-2 py-0.5 rounded-full';
         }
 
+        // DỮ LIỆU MẪU PHONG PHÚ CHO TẤT CẢ DANH MỤC
+        const sampleListings = [
+            { id: 701, title: 'Biệt thự sân vườn Ninh Kiều 250m2', price: 320, category: 'realestate', categoryName: 'Bất Động Sản', area: '250m2', rooms: '4 Phòng', location: 'Cần Thơ', seller: 'Bảo Pi Land', sellerWallet: 'GBCX7Y2Z3A4B5C6D7E8F9G0H1I2J3K4L5M6N7O8P9Q0R1S2T3U4V5W6', rating: '4.9', imgs: ['https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=500'], desc: 'Sổ hồng riêng, vị trí đắc địa trung tâm Cần Thơ.' },
+            { id: 702, title: 'Xe Mazda CX-5 2.5 AWD Lướt', price: 78, category: 'vehicles', categoryName: 'Xe Cộ', location: 'TP.HCM', seller: 'Auto Pi Saigon', sellerWallet: 'GBCX7Y2Z3A4B5C6D7E8F9G0H1I2J3K4L5M6N7O8P9Q0R1S2T3U4V5W6', rating: '4.8', imgs: ['https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=500'], desc: 'Xe chạy 12.000 km, bảo hành chính hãng.' },
+            { id: 703, title: 'iPhone 15 Pro Max 512GB VN/A', price: 18.2, category: 'goods', categoryName: 'Chợ Hàng Hóa', location: 'Hà Nội', seller: 'iStore Pi Global', sellerWallet: 'GBCX7Y2Z3A4B5C6D7E8F9G0H1I2J3K4L5M6N7O8P9Q0R1S2T3U4V5W6', rating: '5.0', imgs: ['https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=500'], desc: 'Mới 100% nguyên seal, hỗ trợ giao hàng toàn quốc.' },
+            { id: 704, title: 'Lập trình Smart Contract DApp Pi SDK', price: 5.0, category: 'services', categoryName: 'Việc Làm', location: 'Global', seller: 'Dev Web3 Team', sellerWallet: 'GBCX7Y2Z3A4B5C6D7E8F9G0H1I2J3K4L5M6N7O8P9Q0R1S2T3U4V5W6', rating: '4.9', imgs: ['https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=500'], desc: 'Nhận lập trình giao diện & tích hợp ví Pi chuẩn.' },
+            { id: 705, title: 'Đấu giá Đồng Hồ Thụy Sĩ Cổ Tác Phẩm', price: 12.5, category: 'auction', categoryName: 'Đấu Giá Pi', location: 'Can Tho', seller: 'Cổ Vật Nam Bộ', sellerWallet: 'GBCX7Y2Z3A4B5C6D7E8F9G0H1I2J3K4L5M6N7O8P9Q0R1S2T3U4V5W6', rating: '4.9', imgs: ['https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=500'], desc: 'Đồng hồ nguyên bản bọc vàng, đấu giá từ 1 Pi.' }
+        ];
+
+        let allListingsCache = [];
         let historyStack = ['home'];
         let currentDetailListing = null;
 
-        // BỘ ĐIỀU HƯỚNG MỞ SÂU CỬA SỔ (DEEP NAVIGATION LOGIC)
-        function showScreen(screenId) {
-            document.querySelectorAll('.view-screen').forEach(el => {
-                el.classList.remove('active');
-            });
-            const target = document.getElementById(screenId);
-            if (target) {
-                target.classList.add('active');
+        async function loadListingsData() {
+            let data = [...sampleListings];
+            if (supabaseClient) {
+                try {
+                    let { data: cloudData, error } = await supabaseClient.from('listings').select('*').order('id', { ascending: false });
+                    if (!error && cloudData) data = [...cloudData, ...sampleListings];
+                } catch (e) {}
             }
+            const localStored = JSON.parse(localStorage.getItem('pi_superapp_db') || '[]');
+            allListingsCache = [...localStored, ...data];
+            renderHomeListings();
+            renderOrdersList();
+        }
 
-            // Nút Back trên Header
+        function showScreen(screenId) {
+            document.querySelectorAll('.view-screen').forEach(el => el.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
             const backBtn = document.getElementById('btn-back');
-            if (screenId !== 'view-home') {
-                backBtn.classList.remove('hidden');
-            } else {
-                backBtn.classList.add('hidden');
-            }
+            if (screenId !== 'view-home') backBtn.classList.remove('hidden');
+            else backBtn.classList.add('hidden');
         }
 
         function switchTab(tabName) {
             historyStack = [tabName];
             showScreen('view-' + tabName);
-
-            // Cập nhật trạng thái màu sắc Bottom Nav
-            document.querySelectorAll('.nav-btn').forEach(btn => {
-                btn.classList.replace('text-ocean-600', 'text-slate-400');
-            });
-            const activeNav = document.getElementById('nav-' + tabName);
-            if (activeNav) {
-                activeNav.classList.replace('text-slate-400', 'text-ocean-600');
-            }
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.replace('text-emeraldTheme-600', 'text-slate-400'));
+            document.getElementById('nav-' + tabName).classList.replace('text-slate-400', 'text-emeraldTheme-600');
         }
 
         function goBack() {
             if (historyStack.length > 1) {
                 historyStack.pop();
-                const prev = historyStack[historyStack.length - 1];
-                showScreen('view-' + prev);
+                showScreen('view-' + historyStack[historyStack.length - 1]);
             } else {
                 switchTab('home');
             }
         }
 
-        // 1. MỞ DANH MỤC HÀNG HÓA SÂU (CATEGORY DEEP NAVIGATION)
         function openCategory(catName, catKey) {
             historyStack.push('list');
             showScreen('view-list');
-
             document.getElementById('category-title').innerText = catName;
             const grid = document.getElementById('category-listings-grid');
             grid.innerHTML = '';
-
-            const allData = getCombinedListings();
-            const filtered = (catKey === 'all') ? allData : allData.filter(item => item.category === catKey);
-
-            document.getElementById('category-count').innerText = `${filtered.length} bài đăng`;
-
-            filtered.forEach(item => {
-                grid.appendChild(createListingCard(item));
-            });
+            const filtered = (catKey === 'all') ? allListingsCache : allListingsCache.filter(item => item.category === catKey);
+            document.getElementById('category-count').innerText = `${filtered.length} bài`;
+            filtered.forEach(item => grid.appendChild(createCard(item)));
         }
 
-        // 2. MỞ CHI TIẾT SẢN PHẨM SÂU (PRODUCT DETAIL DEEP NAVIGATION)
         function openDetail(id) {
-            const allData = getCombinedListings();
-            const found = allData.find(item => item.id == id);
+            const found = allListingsCache.find(item => item.id == id);
             if (!found) return;
-
             currentDetailListing = found;
             historyStack.push('detail');
             showScreen('view-detail');
 
-            document.getElementById('detail-img').src = found.img;
+            const imgList = found.imgs && found.imgs.length > 0 ? found.imgs : ['https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500'];
+            
+            document.getElementById('detail-img').src = imgList[0];
             document.getElementById('detail-title').innerText = found.title;
             document.getElementById('detail-price').innerText = found.price;
             document.getElementById('detail-category').innerText = found.categoryName || found.category;
+            document.getElementById('detail-location').innerText = found.location || 'Cần Thơ, VN';
             document.getElementById('detail-desc').innerText = found.desc;
-            document.getElementById('detail-wallet').innerText = found.wallet || 'GBCX7Y2Z3A4B5C6D7E8F9G0H1I2J3K4L5M6N7O8P9Q0R';
+
+            // Hiển thị thông số diện tích/phòng nếu là BĐS
+            const specsEl = document.getElementById('detail-specs');
+            if (found.category === 'realestate' && found.area) {
+                specsEl.classList.remove('hidden');
+                document.getElementById('spec-area').innerText = found.area;
+                document.getElementById('spec-rooms').innerText = found.rooms || '2 Phòng';
+            } else {
+                specsEl.classList.add('hidden');
+            }
+
+            // Người bán
+            document.getElementById('seller-name').innerText = found.seller || 'Cửa hàng Pi';
+            document.getElementById('seller-rating').innerText = `${found.rating || '4.9'} / 5.0`;
+
+            // Kiểm tra quyền sửa
+            const myWallet = localStorage.getItem('user_pi_wallet');
+            const ownerActions = document.getElementById('owner-actions');
+            if (myWallet && found.sellerWallet === myWallet) ownerActions.classList.remove('hidden');
+            else ownerActions.classList.add('hidden');
         }
 
-        // HÀM TẠO CARD SẢN PHẨM TRỰC QUAN
-        function createListingCard(item) {
-            const card = document.createElement('div');
-            card.className = 'bg-white rounded-xl shadow-sm overflow-hidden border border-slate-100 flex flex-col justify-between hover:shadow-md transition touch-action cursor-pointer';
-            card.onclick = () => openDetail(item.id);
+        function openSellerProfile() {
+            if (!currentDetailListing) return;
+            historyStack.push('shop');
+            showScreen('view-shop');
 
+            document.getElementById('shop-name-lg').innerText = currentDetailListing.seller || 'Cửa hàng Pi';
+            const grid = document.getElementById('shop-listings-grid');
+            grid.innerHTML = '';
+
+            const shopItems = allListingsCache.filter(item => item.seller === currentDetailListing.seller);
+            shopItems.forEach(item => grid.appendChild(createCard(item)));
+        }
+
+        function createCard(item) {
+            const card = document.createElement('div');
+            card.className = 'bg-white rounded-2xl shadow-sm overflow-hidden border border-slate-100 flex flex-col justify-between cursor-pointer touch-action hover:shadow-md transition';
+            card.onclick = () => openDetail(item.id);
+            const mainImg = item.imgs && item.imgs.length > 0 ? item.imgs[0] : 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500';
             card.innerHTML = `
-                <div>
-                    <div class="h-28 bg-slate-100 relative overflow-hidden">
-                        <img src="${item.img}" class="w-full h-full object-cover" loading="lazy" alt="${item.title}">
-                    </div>
-                    <div class="p-2.5">
-                        <h4 class="text-xs font-bold text-slate-800 line-clamp-2 leading-snug mb-1">${item.title}</h4>
-                        <div class="flex items-baseline gap-0.5">
-                            <span class="text-sm font-extrabold text-ocean-600">${item.price}</span>
-                            <span class="text-[10px] font-bold text-amber-500">π</span>
-                        </div>
+                <div class="h-28 bg-slate-100 overflow-hidden relative">
+                    <img src="${mainImg}" class="w-full h-full object-cover">
+                    <span class="absolute top-2 right-2 bg-black/50 backdrop-blur-sm text-white text-[9px] px-1.5 py-0.5 rounded-full font-bold">${item.location || 'VN'}</span>
+                </div>
+                <div class="p-2.5">
+                    <h4 class="text-xs font-bold text-slate-800 line-clamp-2 mb-1">${item.title}</h4>
+                    <div class="flex items-baseline gap-0.5">
+                        <span class="text-sm font-extrabold text-emeraldTheme-600">${item.price}</span>
+                        <span class="text-[10px] font-bold text-amber-500">π</span>
                     </div>
                 </div>
             `;
             return card;
         }
 
-        // BÀI ĐĂNG TRANG CHỦ
         function renderHomeListings() {
             const grid = document.getElementById('home-listings-grid');
             grid.innerHTML = '';
-            const data = getCombinedListings().slice(0, 6);
-            data.forEach(item => {
-                grid.appendChild(createListingCard(item));
-            });
+            allListingsCache.slice(0, 6).forEach(item => grid.appendChild(createCard(item)));
         }
 
-        // 3. ĐĂNG TIN MỚI & LƯU TỰ ĐỘNG
+        // BỘ LỌC NÂNG CAO
+        function openFilterModal() { document.getElementById('modal-filter').classList.remove('hidden'); }
+        function closeFilterModal() { document.getElementById('modal-filter').classList.add('hidden'); }
+        
+        function applyAdvancedFilter() {
+            closeFilterModal();
+            const minPrice = parseFloat(document.getElementById('filter-min-price').value) || 0;
+            const maxPrice = parseFloat(document.getElementById('filter-max-price').value) || 999999;
+            const loc = document.getElementById('filter-location').value;
+
+            historyStack.push('list');
+            showScreen('view-list');
+            document.getElementById('category-title').innerText = 'Kết quả lọc nâng cao';
+
+            const filtered = allListingsCache.filter(item => {
+                const p = item.price;
+                const matchLoc = (loc === 'all') || (item.location === loc);
+                return p >= minPrice && p <= maxPrice && matchLoc;
+            });
+
+            document.getElementById('category-count').innerText = `${filtered.length} bài`;
+            const grid = document.getElementById('category-listings-grid');
+            grid.innerHTML = '';
+            filtered.forEach(item => grid.appendChild(createCard(item)));
+        }
+
+        // ĐĂNG TIN MỚI
         function submitNewListing(e) {
             e.preventDefault();
             const myWallet = localStorage.getItem('user_pi_wallet');
-            
             if (!myWallet) {
-                alert('Vui lòng vào mục "Cá nhân" dán Địa chỉ Ví Pi của bạn trước khi đăng bài!');
+                alert('Vui lòng vào mục "Cá nhân" dán My Pi Wallet Address trước!');
                 switchTab('profile');
                 return;
             }
 
-            const newListing = {
-                id: Date.now(),
-                title: document.getElementById('inp-title').value,
-                category: document.getElementById('inp-category').value,
-                categoryName: document.getElementById('inp-category').options[document.getElementById('inp-category').selectedIndex].text,
-                price: parseFloat(document.getElementById('inp-price').value),
-                img: document.getElementById('inp-img').value || 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=500',
-                desc: document.getElementById('inp-desc').value,
-                wallet: myWallet
+            const fileInput = document.getElementById('inp-files');
+            const catSelect = document.getElementById('inp-category');
+            
+            const saveNewData = (imageArray) => {
+                const newListing = {
+                    id: Date.now(),
+                    title: document.getElementById('inp-title').value,
+                    category: catSelect.value,
+                    categoryName: catSelect.options[catSelect.selectedIndex].text,
+                    price: parseFloat(document.getElementById('inp-price').value),
+                    imgs: imageArray,
+                    desc: document.getElementById('inp-desc').value,
+                    seller: 'Tôi (Pioneer)',
+                    sellerWallet: myWallet,
+                    rating: '5.0',
+                    location: 'Cần Thơ'
+                };
+
+                const existing = JSON.parse(localStorage.getItem('pi_superapp_db') || '[]');
+                existing.unshift(newListing);
+                localStorage.setItem('pi_superapp_db', JSON.stringify(existing));
+
+                if (supabaseClient) {
+                    supabaseClient.from('listings').insert([newListing]).then(() => {});
+                }
+
+                alert('Đăng bài thành công!');
+                document.getElementById('form-create').reset();
+                loadListingsData();
+                switchTab('home');
             };
 
-            const existing = JSON.parse(localStorage.getItem('my_pi_listings') || '[]');
-            existing.unshift(newListing);
-            localStorage.setItem('my_pi_listings', JSON.stringify(existing));
-
-            alert('Đăng bài thành công!');
-            document.getElementById('form-create').reset();
-            renderHomeListings();
-            switchTab('home');
+            if (fileInput.files && fileInput.files.length > 0) {
+                let readers = [];
+                let results = [];
+                Array.from(fileInput.files).forEach((file, index) => {
+                    let reader = new FileReader();
+                    readers.push(new Promise((resolve) => {
+                        reader.onload = function(e) { results[index] = e.target.result; resolve(); };
+                        reader.readAsDataURL(file);
+                    }));
+                });
+                Promise.all(readers).then(() => saveNewData(results));
+            } else {
+                saveNewData(['https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500']);
+            }
         }
 
-        // 4. QUẢN LÝ VÍ & LƯU ĐỊA CHỈ VÍ G-ADDRESS
+        // QUẢN LÝ ĐƠN HÀNG VÀ TxID
+        function handlePayment(type) {
+            if (!currentDetailListing) return;
+            if (type === 'Pi') {
+                const txid = prompt("Nhập Mã giao dịch (TxID) sau khi thanh toán qua Ví Pi:");
+                if (txid && txid.trim().length > 10) {
+                    addOrderRecord(currentDetailListing, 'Thanh toán trước Ví Pi', txid.trim());
+                } else {
+                    alert('Mã TxID chưa hợp lệ!');
+                }
+            } else {
+                addOrderRecord(currentDetailListing, 'Thanh toán COD', 'N/A (Trực tiếp)');
+            }
+        }
+
+        function addOrderRecord(item, method, txid) {
+            const order = {
+                id: 'ORD-' + Date.now(),
+                title: item.title,
+                price: item.price,
+                method: method,
+                txid: txid,
+                status: 'Đang xử lý giao hàng',
+                date: new Date().toLocaleDateString('vi-VN')
+            };
+
+            const orders = JSON.parse(localStorage.getItem('my_pi_orders') || '[]');
+            orders.unshift(order);
+            localStorage.setItem('my_pi_orders', JSON.stringify(orders));
+
+            alert('Đã tạo đơn hàng thành công!');
+            renderOrdersList();
+            switchTab('orders');
+        }
+
+        function renderOrdersList() {
+            const orders = JSON.parse(localStorage.getItem('my_pi_orders') || '[]');
+            const container = document.getElementById('orders-list');
+            if (orders.length === 0) {
+                container.innerHTML = `<p class="text-xs text-slate-400 text-center py-6">Chưa có đơn hàng nào.</p>`;
+                return;
+            }
+            container.innerHTML = '';
+            orders.forEach(ord => {
+                const div = document.createElement('div');
+                div.className = 'bg-white p-3 rounded-2xl border border-slate-100 shadow-sm text-xs space-y-1';
+                div.innerHTML = `
+                    <div class="flex justify-between items-center"><strong class="text-slate-800">${ord.id}</strong><span class="text-emeraldTheme-600 font-bold bg-emeraldTheme-50 px-2 py-0.5 rounded-full">${ord.status}</span></div>
+                    <p class="text-slate-600 font-medium">${ord.title}</p>
+                    <p class="text-slate-500">Giá: <strong class="text-emeraldTheme-600">${ord.price} π</strong> - PTTT: ${ord.method}</p>
+                    <p class="font-mono text-[10px] text-slate-400 bg-slate-50 p-1.5 rounded border border-slate-100 truncate">TxID: ${ord.txid}</p>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        // LƯU MÃ VÍ CHUẨN CHỮ G
         function saveUserWallet() {
             const val = document.getElementById('user-wallet-input').value.trim();
             if (val.length === 56 && val.startsWith('G')) {
                 localStorage.setItem('user_pi_wallet', val);
                 document.getElementById('wallet-status').innerText = 'Đã nối ví';
-                alert('Đã lưu Địa chỉ Ví Pi công khai thành công!');
+                alert('Đã lưu My Pi Wallet Address thành công!');
             } else {
-                alert('Địa chỉ Ví Pi công khai phải bắt đầu bằng chữ "G" và có độ dài đúng 56 ký tự!');
+                alert('Địa chỉ Ví Pi phải bắt đầu bằng chữ "G" và đúng 56 ký tự!');
             }
         }
 
-        function copySellerWallet() {
-            const wallet = document.getElementById('detail-wallet').innerText;
-            navigator.clipboard.writeText(wallet).then(() => {
-                alert('Đã sao chép Địa chỉ Ví người bán!');
-            });
+        function openSupportCenter() {
+            historyStack.push('info-page');
+            showScreen('view-info-page');
+            document.getElementById('info-page-title').innerText = 'Trung Tâm Hỗ Trợ Pioneer';
+            document.getElementById('info-page-content').innerHTML = `
+                <p>Mọi thắc mắc về giao dịch thanh toán Ví Pi, vui lòng liên hệ bộ phận hỗ trợ kỹ thuật qua Diễn Đàn Pi Community.</p>
+                <p>Email hỗ trợ: support@pisuperapp.com</p>
+            `;
         }
 
-        function handlePayment(type) {
-            if (type === 'Pi') {
-                alert(`Vui lòng mở Ví Pi của bạn trong Pi Browser và chuyển số Pi đến địa chỉ:\n\n${currentDetailListing.wallet}\n\nNội dung: Thanh toan đơn hàng #${currentDetailListing.id}`);
-            } else {
-                alert('Đã ghi nhận yêu cầu Thanh toán COD khi nhận hàng!');
-            }
+        function openSafetyRules() {
+            historyStack.push('info-page');
+            showScreen('view-info-page');
+            document.getElementById('info-page-title').innerText = 'Quy Định An Toàn Giao Dịch';
+            document.getElementById('info-page-content').innerHTML = `
+                <p>1. Luôn xác nhận Mã TxID chuẩn trên Pi Blockexplorer trước khi bàn giao hàng hóa giá trị lớn.</p>
+                <p>2. Không chia sẻ cụm mật khẩu 24 từ của Ví Pi cho bất kỳ ai dưới mọi hình thức.</p>
+            `;
         }
 
-        // TỰ ĐỘNG KHỞI CHẠY KHI TẢI TRANG
         window.addEventListener('DOMContentLoaded', () => {
-            renderHomeListings();
-            
-            // Khôi phục ví cũ nếu có
+            loadListingsData();
             const savedWallet = localStorage.getItem('user_pi_wallet');
             if (savedWallet) {
                 document.getElementById('user-wallet-input').value = savedWallet;
