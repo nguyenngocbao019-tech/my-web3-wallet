@@ -3,365 +3,469 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Bảo Pi Wallet - Sidra DEX Live</title>
+    <title>Sidra Pi Ecosystem - Super App</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        ocean: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            500: '#0284c7',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            900: '#0c4a6e'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        * {
-            -webkit-tap-highlight-color: transparent;
-            user-select: none;
-            box-sizing: border-box;
-        }
-        html, body {
-            background: linear-gradient(135deg, #7c3aed 0%, #581c87 50%, #3b0764 100%);
-            min-height: 100vh;
-            margin: 0;
-            padding: 0;
-            font-family: system-ui, -apple-system, sans-serif;
-        }
+        /* Tối ưu hiệu ứng cuộn & chuyển cảnh mượt như App Studio */
+        body { -webkit-tap-highlight-color: transparent; user-select: none; font-family: system-ui, -apple-system, sans-serif; }
+        .view-screen { display: none; opacity: 0; transition: opacity 0.25s ease-in-out, transform 0.25s ease-in-out; transform: translateY(8px); }
+        .view-screen.active { display: block; opacity: 1; transform: translateY(0); }
+        .touch-action { touch-action: manipulation; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
-<body class="text-slate-800 antialiased pb-24">
+<body class="bg-slate-50 text-slate-800 pb-20">
 
-    <!-- TOP HEADER -->
-    <div class="px-4 pt-4 pb-2 flex items-center justify-between text-white">
-        <!-- Nút quét QR -->
-        <button onclick="openModal('Quét mã QR / Scanner')" class="p-2.5 bg-white/10 backdrop-blur-md rounded-2xl active:scale-95 transition">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8H2a1 1 0 00-1 1v3m18-4h3a1 1 0 011 1v3M4 16H2a1 1 0 00-1 1v3m18-3h3a1 1 0 011 1v3M4 4h4V2H4v2zm16 0h-4V2h4v2z"/></svg>
-        </button>
-
-        <!-- Tiêu đề / Tab App & Wallet -->
-        <div class="bg-white/15 backdrop-blur-md p-1 rounded-full flex items-center space-x-1">
-            <button onclick="openModal('Chế độ App')" class="px-4 py-1.5 rounded-full text-xs font-semibold text-white/70">App</button>
-            <button class="px-4 py-1.5 rounded-full text-xs font-semibold bg-white text-slate-900 shadow-md">Bảo Pi Wallet</button>
-        </div>
-
-        <!-- Nút Cài đặt (Bánh răng) -->
-        <button onclick="openModal('Cài đặt hệ thống & Mạng')" class="p-2.5 bg-white/10 backdrop-blur-md rounded-2xl active:scale-95 transition">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-        </button>
-    </div>
-
-    <!-- ACCOUNT INFO & KẾT NỐI VÍ BAR -->
-    <div class="px-4 py-2 flex items-center justify-between text-white">
-        <div onclick="openModal('Quản lý tài khoản ví')" class="flex items-center space-x-3 bg-white/10 backdrop-blur-md px-3 py-2 rounded-2xl border border-white/10 active:scale-95 transition cursor-pointer">
-            <div class="w-9 h-9 rounded-full bg-emerald-500 flex items-center justify-center font-bold text-white shadow-inner">BP</div>
-            <div>
-                <div class="text-xs font-medium flex items-center space-x-1">
-                    <span>Ví Bảo Pi - #1</span>
-                    <svg class="w-3.5 h-3.5 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-                </div>
-                <div class="text-[11px] text-white/70 font-mono">0x9f6f...d513</div>
+    <!-- HEADER / THANH TIÊU ĐỀ -->
+    <header class="sticky top-0 z-40 bg-ocean-600 text-white shadow-md">
+        <div class="max-w-md mx-auto px-4 py-3 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <button id="btn-back" onclick="goBack()" class="hidden text-white p-1 touch-action">
+                    <i class="fa-solid fa-arrow-left text-xl"></i>
+                </button>
+                <h1 id="app-title" class="font-bold text-lg tracking-wide">Ocean Pi Market</h1>
+            </div>
+            <div class="flex items-center gap-3">
+                <button onclick="openWalletModal()" class="bg-ocean-700 hover:bg-ocean-900 text-xs px-2.5 py-1.5 rounded-full flex items-center gap-1 border border-ocean-500 touch-action">
+                    <i class="fa-solid fa-wallet text-amber-300"></i>
+                    <span id="wallet-status">Chưa nối ví</span>
+                </button>
             </div>
         </div>
-        <div class="flex items-center space-x-2">
-            <!-- Nút Kết nối ví -->
-            <button onclick="openModal('Trạng thái Kết nối ví Web3')" class="px-3.5 py-2 bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-xl font-bold text-xs flex items-center space-x-1 shadow-lg active:scale-95 transition">
-               <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-               <span>Kết nối ví</span>
+    </header>
+
+    <!-- CONTAINER CHÍNH -->
+    <main class="max-w-md mx-auto px-4 pt-3">
+
+        <!-- 1. MÀN HÌNH TRANG CHỦ & DANH MỤC (HOME VIEW) -->
+        <section id="view-home" class="view-screen active">
+            <!-- Banner chào mừng -->
+            <div class="bg-gradient-to-r from-ocean-600 to-ocean-800 rounded-2xl p-4 text-white shadow-lg mb-5">
+                <p class="text-xs text-ocean-100 font-medium">Hệ sinh thái Bất động sản & Sản phẩm</p>
+                <h2 class="text-xl font-bold mt-0.5">Trao đổi Pi Network</h2>
+                <p class="text-xs text-ocean-100 mt-2 opacity-90"><i class="fa-solid fa-shield-halved"></i> Giao dịch an toàn - Trực tiếp qua Ví Pi</p>
+            </div>
+
+            <!-- DANH MỤC BẤT BẰNG & SẢN PHẨM (MỞ SÂU) -->
+            <div class="flex items-center justify-between mb-3">
+                <h3 class="font-bold text-slate-800 text-base">Danh mục dịch vụ</h3>
+            </div>
+            <div class="grid grid-cols-3 gap-3 mb-6">
+                <button onclick="openCategory('Bất động sản', 'realestate')" class="bg-white p-3 rounded-xl shadow-sm border border-slate-100 flex flex-col items-center justify-center hover:border-ocean-500 transition touch-action">
+                    <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center text-xl mb-1.5"><i class="fa-solid fa-city"></i></div>
+                    <span class="text-xs font-semibold text-slate-700">Bất động sản</span>
+                </button>
+                <button onclick="openCategory('Xe cộ', 'vehicles')" class="bg-white p-3 rounded-xl shadow-sm border border-slate-100 flex flex-col items-center justify-center hover:border-ocean-500 transition touch-action">
+                    <div class="w-12 h-12 bg-amber-50 text-amber-600 rounded-full flex items-center justify-center text-xl mb-1.5"><i class="fa-solid fa-car"></i></div>
+                    <span class="text-xs font-semibold text-slate-700">Xe cộ</span>
+                </button>
+                <button onclick="openCategory('Chợ hàng hóa', 'goods')" class="bg-white p-3 rounded-xl shadow-sm border border-slate-100 flex flex-col items-center justify-center hover:border-ocean-500 transition touch-action">
+                    <div class="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center text-xl mb-1.5"><i class="fa-solid fa-basket-shopping"></i></div>
+                    <span class="text-xs font-semibold text-slate-700">Chợ hàng hóa</span>
+                </button>
+                <button onclick="openCategory('Dịch vụ', 'services')" class="bg-white p-3 rounded-xl shadow-sm border border-slate-100 flex flex-col items-center justify-center hover:border-ocean-500 transition touch-action">
+                    <div class="w-12 h-12 bg-purple-50 text-purple-600 rounded-full flex items-center justify-center text-xl mb-1.5"><i class="fa-solid fa-handshake-angle"></i></div>
+                    <span class="text-xs font-semibold text-slate-700">Dịch vụ</span>
+                </button>
+                <button onclick="openCategory('Đấu giá', 'auction')" class="bg-white p-3 rounded-xl shadow-sm border border-slate-100 flex flex-col items-center justify-center hover:border-ocean-500 transition touch-action">
+                    <div class="w-12 h-12 bg-rose-50 text-rose-600 rounded-full flex items-center justify-center text-xl mb-1.5"><i class="fa-solid fa-gavel"></i></div>
+                    <span class="text-xs font-semibold text-slate-700">Đấu giá Pi</span>
+                </button>
+                <button onclick="openCategory('Tất cả', 'all')" class="bg-white p-3 rounded-xl shadow-sm border border-slate-100 flex flex-col items-center justify-center hover:border-ocean-500 transition touch-action">
+                    <div class="w-12 h-12 bg-slate-100 text-slate-600 rounded-full flex items-center justify-center text-xl mb-1.5"><i class="fa-solid fa-border-all"></i></div>
+                    <span class="text-xs font-semibold text-slate-700">Xem tất cả</span>
+                </button>
+            </div>
+
+            <!-- BÀI ĐĂNG NỔI BẬT -->
+            <div class="flex items-center justify-between mb-3">
+                <h3 class="font-bold text-slate-800 text-base">Tin nổi bật</h3>
+            </div>
+            <div id="home-listings-grid" class="grid grid-cols-2 gap-3">
+                <!-- Javascript sẽ tự chèn tin nổi bật vào đây -->
+            </div>
+        </section>
+
+        <!-- 2. MÀN HÌNH DANH SÁCH SẢN PHẨM / KHI BẤM DANH MỤC (LIST VIEW) -->
+        <section id="view-list" class="view-screen">
+            <div class="flex items-center justify-between mb-3">
+                <h3 id="category-title" class="font-bold text-slate-800 text-lg">Danh sách tin</h3>
+                <span id="category-count" class="text-xs bg-ocean-100 text-ocean-700 px-2 py-1 rounded-full font-semibold">0 bài</span>
+            </div>
+            <div id="category-listings-grid" class="grid grid-cols-2 gap-3">
+                <!-- Đổ dữ liệu danh sách sản phẩm nhiều bài -->
+            </div>
+        </section>
+
+        <!-- 3. MÀN HÌNH CHI TIẾT SẢN PHẨM (DETAIL VIEW) -->
+        <section id="view-detail" class="view-screen">
+            <div class="bg-white rounded-2xl shadow-sm overflow-hidden border border-slate-100 mb-4">
+                <div class="relative h-60 bg-slate-200">
+                    <img id="detail-img" src="" class="w-full h-full object-cover" alt="Sản phẩm">
+                    <div class="absolute bottom-3 right-3 bg-black/60 text-white text-xs px-2.5 py-1 rounded-full backdrop-blur-sm">
+                        <i class="fa-regular fa-image"></i> 3 ảnh
+                    </div>
+                </div>
+                <div class="p-4">
+                    <div class="flex items-center justify-between gap-2 mb-1">
+                        <span id="detail-category" class="text-[10px] font-bold text-ocean-600 bg-ocean-50 uppercase tracking-wider px-2 py-0.5 rounded">Bất động sản</span>
+                        <span id="detail-date" class="text-xs text-slate-400">Vừa đăng</span>
+                    </div>
+                    <h2 id="detail-title" class="text-lg font-bold text-slate-800 leading-snug mb-2">Biệt thự Đà Lạt view thung lũng</h2>
+                    <div class="flex items-baseline gap-1 mb-3">
+                        <span id="detail-price" class="text-2xl font-extrabold text-ocean-600">350</span>
+                        <span class="text-sm font-bold text-amber-500">π (Pi)</span>
+                    </div>
+                    <div class="border-t border-slate-100 pt-3 mt-3">
+                        <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wide mb-1">Mô tả sản phẩm</h4>
+                        <p id="detail-desc" class="text-sm text-slate-600 leading-relaxed">Thông tin mô tả đầy đủ...</p>
+                    </div>
+                    <div class="border-t border-slate-100 pt-3 mt-3">
+                        <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wide mb-1">Địa chỉ Ví người bán</h4>
+                        <div class="bg-slate-50 p-2.5 rounded-lg border border-slate-200 flex items-center justify-between">
+                            <span id="detail-wallet" class="text-xs font-mono text-slate-600 truncate pr-2">G.......................................................</span>
+                            <button onclick="copySellerWallet()" class="text-xs bg-white text-ocean-600 border border-ocean-200 px-2 py-1 rounded hover:bg-ocean-50 touch-action">Copy</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- NÚT THANH TOÁN -->
+            <div class="flex gap-2">
+                <button onclick="handlePayment('Pi')" class="flex-1 bg-ocean-600 hover:bg-ocean-700 text-white font-bold py-3 px-4 rounded-xl shadow-md flex items-center justify-center gap-2 touch-action">
+                    <i class="fa-brands fa-brands fa-pi font-bold text-amber-300"></i> Thanh toán bằng Ví Pi
+                </button>
+                <button onclick="handlePayment('COD')" class="flex-1 bg-slate-700 hover:bg-slate-800 text-white font-bold py-3 px-4 rounded-xl shadow-md flex items-center justify-center gap-2 touch-action">
+                    <i class="fa-solid fa-truck"></i> Thanh toán COD
+                </button>
+            </div>
+        </section>
+
+        <!-- 4. MÀN HÌNH ĐĂNG TIN MỚI (CREATE LISTING VIEW) -->
+        <section id="view-create" class="view-screen">
+            <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
+                <h2 class="text-lg font-bold text-slate-800 mb-4">Đăng sản phẩm/Tin bán mới</h2>
+                <form id="form-create" onsubmit="submitNewListing(event)">
+                    <div class="mb-3">
+                        <label class="block text-xs font-bold text-slate-600 mb-1">Tiêu đề bài đăng</label>
+                        <input type="text" id="inp-title" required placeholder="Ví dụ: Xe Mazda CX-5 chính chủ" class="w-full text-sm p-2.5 border border-slate-200 rounded-lg focus:outline-none focus:border-ocean-500">
+                    </div>
+                    <div class="mb-3">
+                        <label class="block text-xs font-bold text-slate-600 mb-1">Chọn Danh mục</label>
+                        <select id="inp-category" class="w-full text-sm p-2.5 border border-slate-200 rounded-lg focus:outline-none focus:border-ocean-500">
+                            <option value="realestate">Bất động sản</option>
+                            <option value="vehicles">Xe cộ</option>
+                            <option value="goods">Chợ hàng hóa</option>
+                            <option value="services">Dịch vụ</option>
+                            <option value="auction">Đấu giá Pi</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="block text-xs font-bold text-slate-600 mb-1">Giá bán (Pi)</label>
+                        <input type="number" step="0.01" id="inp-price" required placeholder="Nhập số Pi" class="w-full text-sm p-2.5 border border-slate-200 rounded-lg focus:outline-none focus:border-ocean-500">
+                    </div>
+                    <div class="mb-3">
+                        <label class="block text-xs font-bold text-slate-600 mb-1">Đường dẫn ảnh (Unsplash/URL)</label>
+                        <input type="url" id="inp-img" placeholder="https://images.unsplash.com/..." class="w-full text-sm p-2.5 border border-slate-200 rounded-lg focus:outline-none focus:border-ocean-500">
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-xs font-bold text-slate-600 mb-1">Mô tả chi tiết</label>
+                        <textarea id="inp-desc" rows="3" required placeholder="Nhập tình trạng sản phẩm, địa chỉ, số điện thoại..." class="w-full text-sm p-2.5 border border-slate-200 rounded-lg focus:outline-none focus:border-ocean-500"></textarea>
+                    </div>
+                    <button type="submit" class="w-full bg-ocean-600 hover:bg-ocean-700 text-white font-bold py-3 rounded-xl shadow-md touch-action">Đăng ngay</button>
+                </form>
+            </div>
+        </section>
+
+        <!-- 5. MÀN HÌNH TRANG CÁ NHÂN & DÁN VÍ (PROFILE VIEW) -->
+        <section id="view-profile" class="view-screen">
+            <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 mb-4 text-center">
+                <div class="w-16 h-16 bg-ocean-100 text-ocean-600 rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-2">
+                    <i class="fa-solid fa-user"></i>
+                </div>
+                <h2 id="profile-name" class="font-bold text-slate-800 text-base">Thành viên Pi Network</h2>
+                <p class="text-xs text-slate-400">Tài khoản chính thức</p>
+            </div>
+
+            <!-- Ô CẤU HÌNH ĐỊA CHỈ VÍ PI G-ADDRESS (56 KÝ TỰ) -->
+            <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
+                <h3 class="font-bold text-slate-800 text-sm mb-1"><i class="fa-solid fa-wallet text-ocean-600"></i> Địa chỉ Ví Pi của tôi</h3>
+                <p class="text-xs text-slate-500 mb-3">Dán Địa chỉ Ví công khai (bắt đầu bằng chữ **G**, 56 ký tự) để nhận Pi khi bán hàng.</p>
+                
+                <input type="text" id="user-wallet-input" maxlength="56" placeholder="GXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" class="w-full font-mono text-xs p-3 border border-slate-200 rounded-xl mb-3 focus:outline-none focus:border-ocean-500 bg-slate-50">
+                
+                <button onclick="saveUserWallet()" class="w-full bg-ocean-600 hover:bg-ocean-700 text-white font-bold py-2.5 rounded-xl shadow touch-action text-sm">Lưu Địa Chỉ Ví</button>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- THANH ĐIỀU HƯỚNG DƯỚI CÙNG (BOTTOM NAVIGATION BAR) -->
+    <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 z-40">
+        <div class="max-w-md mx-auto flex justify-around py-2">
+            <button onclick="switchTab('home')" class="nav-btn text-ocean-600 flex flex-col items-center touch-action" id="nav-home">
+                <i class="fa-solid fa-house text-lg"></i>
+                <span class="text-[10px] font-medium mt-0.5">Trang chủ</span>
+            </button>
+            <button onclick="switchTab('create')" class="nav-btn text-slate-400 flex flex-col items-center touch-action" id="nav-create">
+                <i class="fa-solid fa-circle-plus text-lg"></i>
+                <span class="text-[10px] font-medium mt-0.5">Đăng tin</span>
+            </button>
+            <button onclick="switchTab('profile')" class="nav-btn text-slate-400 flex flex-col items-center touch-action" id="nav-profile">
+                <i class="fa-solid fa-user text-lg"></i>
+                <span class="text-[10px] font-medium mt-0.5">Cá nhân</span>
             </button>
         </div>
-    </div>
+    </nav>
 
-    <!-- TOTAL BALANCE SECTION -->
-    <div class="px-5 pt-4 pb-3 text-white">
-        <div class="text-xs text-white/70 uppercase tracking-wider font-semibold">Tổng số dư tài sản</div>
-        <div class="text-4xl font-extrabold tracking-tight mt-0.5">$37,590.00</div>
-        <div class="flex items-center space-x-2 mt-1">
-            <span class="text-xs font-semibold px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300">+$1,245.50</span>
-            <span class="text-xs text-emerald-300 font-medium">+3.42% (24h)</span>
-        </div>
-    </div>
-
-    <!-- QUICK ACTIONS -->
-    <div class="px-4 py-3 grid grid-cols-5 gap-2">
-        <button onclick="openModal('Gửi Token')" class="flex flex-col items-center bg-white/10 backdrop-blur-md py-3 rounded-2xl active:scale-95 transition text-white">
-            <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center mb-1"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg></div>
-            <span class="text-xs font-medium">Gửi</span>
-        </button>
-        <button onclick="openModal('Nhận Token')" class="flex flex-col items-center bg-white/10 backdrop-blur-md py-3 rounded-2xl active:scale-95 transition text-white">
-            <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center mb-1"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg></div>
-            <span class="text-xs font-medium">Nhận</span>
-        </button>
-        <button onclick="openModal('Livestream Web3')" class="flex flex-col items-center bg-white/10 backdrop-blur-md py-3 rounded-2xl active:scale-95 transition text-white">
-            <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center mb-1"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg></div>
-            <span class="text-xs font-medium">Livestream</span>
-        </button>
-        <button onclick="openModal('Staking & Earn')" class="flex flex-col items-center bg-white/10 backdrop-blur-md py-3 rounded-2xl active:scale-95 transition text-white">
-            <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center mb-1"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg></div>
-            <span class="text-xs font-medium">Stake</span>
-        </button>
-        <button onclick="openModal('Tiện ích bổ sung')" class="flex flex-col items-center bg-white/10 backdrop-blur-md py-3 rounded-2xl active:scale-95 transition text-white">
-            <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center mb-1"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"/></svg></div>
-            <span class="text-xs font-medium">Thêm</span>
-        </button>
-    </div>
-
-    <!-- BANNER VISA CARD -->
-    <div class="px-4 py-2">
-        <div class="bg-gradient-to-r from-slate-900 to-indigo-950 p-4 rounded-3xl text-white flex items-center justify-between shadow-xl border border-white/10">
-            <div>
-                <div class="text-xs text-amber-400 font-bold uppercase tracking-wider">Bảo Pi Card</div>
-                <div class="text-base font-bold mt-0.5">Get your Visa Card</div>
-                <div class="text-[11px] text-slate-400">Thẻ thanh toán quốc tế Web3</div>
-                <button onclick="openModal('Đăng ký Visa Card')" class="mt-3 px-4 py-1.5 bg-white text-slate-900 text-xs font-bold rounded-xl active:scale-95 transition shadow">Explore Now</button>
-            </div>
-            <div class="w-24 h-16 bg-gradient-to-tr from-amber-500 to-indigo-600 rounded-xl shadow-lg flex items-center justify-center font-bold text-xs rotate-3 border border-white/20">
-                VISA
-            </div>
-        </div>
-    </div>
-
-    <!-- MAIN CONTENT CONTAINER (WHITE CARD) -->
-    <div class="mt-3 bg-white rounded-t-[35px] min-h-[500px] px-4 pt-5 pb-24 shadow-2xl">
-        
-        <!-- TABS -->
-        <div class="flex items-center justify-between border-b border-slate-100 pb-3">
-            <div class="flex space-x-6">
-                <button class="text-sm font-bold text-indigo-600 border-b-2 border-indigo-600 pb-2">Token</button>
-                <button onclick="openModal('Bộ sưu tập NFT')" class="text-sm font-semibold text-slate-400 pb-2">NFT</button>
-                <button onclick="openModal('Lịch sử giao dịch')" class="text-sm font-semibold text-slate-400 pb-2">Lịch sử</button>
-            </div>
-            <button onclick="openModal('Bộ lọc tài sản')" class="p-2 text-slate-500 bg-slate-100 rounded-xl"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/></svg></button>
-        </div>
-
-        <!-- SEARCH BAR -->
-        <div class="mt-4 flex items-center space-x-2">
-            <div class="flex-1 bg-slate-100 flex items-center px-4 py-2.5 rounded-2xl">
-                <svg class="w-4 h-4 text-slate-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                <input type="text" placeholder="Search token, e.g. VPM, FBAY..." class="bg-transparent text-xs outline-none w-full text-slate-700">
-            </div>
-        </div>
-
-        <!-- TOKEN LIST (Sidra Ecosystem & Market Pairs) -->
-        <div class="mt-4 space-y-3">
-            
-            <!-- 1. VPM / SDA -->
-            <div onclick="openModal('VPM / SDA - VPM ecosystem')" class="flex items-center justify-between p-3 bg-slate-50 rounded-2xl active:scale-[0.98] transition cursor-pointer">
-                <div class="flex items-center space-x-3">
-                    <div class="w-10 h-10 rounded-full bg-teal-500 flex items-center justify-center font-bold text-white shadow">V</div>
-                    <div>
-                        <div class="font-bold text-sm text-slate-900">VPM / SDA</div>
-                        <div class="text-xs text-slate-400">VPM ecosystem</div>
-                    </div>
-                </div>
-                <div class="text-right">
-                    <div class="font-bold text-sm text-slate-900">0.927342 SDA</div>
-                    <div class="text-xs text-emerald-600 font-semibold">$366.58 ↑ 0.9%</div>
-                </div>
-            </div>
-
-            <!-- 2. FBAY / SDA -->
-            <div onclick="openModal('FBAY / SDA - FALCONBAY')" class="flex items-center justify-between p-3 bg-slate-50 rounded-2xl active:scale-[0.98] transition cursor-pointer">
-                <div class="flex items-center space-x-3">
-                    <div class="w-10 h-10 rounded-full bg-amber-600 flex items-center justify-center font-bold text-white shadow">F</div>
-                    <div>
-                        <div class="font-bold text-sm text-slate-900">FBAY / SDA</div>
-                        <div class="text-xs text-slate-400">FALCONBAY</div>
-                    </div>
-                </div>
-                <div class="text-right">
-                    <div class="font-bold text-sm text-slate-900">0.807283 SDA</div>
-                    <div class="text-xs text-rose-500 font-semibold">$323.65 ↓ 1.3%</div>
-                </div>
-            </div>
-
-            <!-- 3. SGWA / SDA -->
-            <div onclick="openModal('SGWA / SDA - Gemworld')" class="flex items-center justify-between p-3 bg-slate-50 rounded-2xl active:scale-[0.98] transition cursor-pointer">
-                <div class="flex items-center space-x-3">
-                    <div class="w-10 h-10 rounded-full bg-indigo-500 flex items-center justify-center font-bold text-white shadow">S</div>
-                    <div>
-                        <div class="font-bold text-sm text-slate-900">SGWA / SDA</div>
-                        <div class="text-xs text-slate-400">Gemworld</div>
-                    </div>
-                </div>
-                <div class="text-right">
-                    <div class="font-bold text-sm text-slate-900">0.714232 SDA</div>
-                    <div class="text-xs text-rose-500 font-semibold">$282.34 ↓ 2.6%</div>
-                </div>
-            </div>
-
-            <!-- 4. GPC / SDA -->
-            <div onclick="openModal('GPC / SDA - GLN Property Chain')" class="flex items-center justify-between p-3 bg-slate-50 rounded-2xl active:scale-[0.98] transition cursor-pointer">
-                <div class="flex items-center space-x-3">
-                    <div class="w-10 h-10 rounded-full bg-yellow-600 flex items-center justify-center font-bold text-white shadow">G</div>
-                    <div>
-                        <div class="font-bold text-sm text-slate-900">GPC / SDA</div>
-                        <div class="text-xs text-slate-400">GLN Property Chain</div>
-                    </div>
-                </div>
-                <div class="text-right">
-                    <div class="font-bold text-sm text-slate-900">0.654439 SDA</div>
-                    <div class="text-xs text-emerald-600 font-semibold">$258.70 ↑ 2.6%</div>
-                </div>
-            </div>
-
-            <!-- 5. VPA / SDA -->
-            <div onclick="openModal('VPA / SDA - VPAWord')" class="flex items-center justify-between p-3 bg-slate-50 rounded-2xl active:scale-[0.98] transition cursor-pointer">
-                <div class="flex items-center space-x-3">
-                    <div class="w-10 h-10 rounded-full bg-emerald-600 flex items-center justify-center font-bold text-white shadow">V</div>
-                    <div>
-                        <div class="font-bold text-sm text-slate-900">VPA / SDA</div>
-                        <div class="text-xs text-slate-400">VPAWord</div>
-                    </div>
-                </div>
-                <div class="text-right">
-                    <div class="font-bold text-sm text-slate-900">0.525219 SDA</div>
-                    <div class="text-xs text-emerald-600 font-semibold">$207.62 ↑ 1.9%</div>
-                </div>
-            </div>
-
-            <!-- 6. VPE / SDA -->
-            <div onclick="openModal('VPE / SDA - Digital Asset Evaluation')" class="flex items-center justify-between p-3 bg-slate-50 rounded-2xl active:scale-[0.98] transition cursor-pointer">
-                <div class="flex items-center space-x-3">
-                    <div class="w-10 h-10 rounded-full bg-amber-500 flex items-center justify-center font-bold text-slate-900 shadow">V</div>
-                    <div>
-                        <div class="font-bold text-sm text-slate-900">VPE / SDA</div>
-                        <div class="text-xs text-slate-400">Digital Asset Evaluation</div>
-                    </div>
-                </div>
-                <div class="text-right">
-                    <div class="font-bold text-sm text-slate-900">0.474553 SDA</div>
-                    <div class="text-xs text-emerald-600 font-semibold">$187.59 ↑ 0.7%</div>
-                </div>
-            </div>
-
-            <!-- 7. GACP / SDA -->
-            <div onclick="openModal('GACP / SDA - GLN agriculture chain')" class="flex items-center justify-between p-3 bg-slate-50 rounded-2xl active:scale-[0.98] transition cursor-pointer">
-                <div class="flex items-center space-x-3">
-                    <div class="w-10 h-10 rounded-full bg-amber-700 flex items-center justify-center font-bold text-white shadow">G</div>
-                    <div>
-                        <div class="font-bold text-sm text-slate-900">GACP / SDA</div>
-                        <div class="text-xs text-slate-400">GLN agriculture chain</div>
-                    </div>
-                </div>
-                <div class="text-right">
-                    <div class="font-bold text-sm text-slate-900">0.378646 SDA</div>
-                    <div class="text-xs text-rose-500 font-semibold">$151.80 ↓ 1.9%</div>
-                </div>
-            </div>
-
-            <!-- 8. AITT / SDA -->
-            <div onclick="openModal('AITT / SDA - Aisha travel tours')" class="flex items-center justify-between p-3 bg-slate-50 rounded-2xl active:scale-[0.98] transition cursor-pointer">
-                <div class="flex items-center space-x-3">
-                    <div class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center font-bold text-white shadow">A</div>
-                    <div>
-                        <div class="font-bold text-sm text-slate-900">AITT / SDA</div>
-                        <div class="text-xs text-slate-400">Aisha travel tours</div>
-                    </div>
-                </div>
-                <div class="text-right">
-                    <div class="font-bold text-sm text-slate-900">0.354926 SDA</div>
-                    <div class="text-xs text-rose-500 font-semibold">$142.29 ↓ 1.5%</div>
-                </div>
-            </div>
-
-            <!-- 9. QSM / SDA -->
-            <div onclick="openModal('QSM / SDA - Qatar Sidra Mall')" class="flex items-center justify-between p-3 bg-slate-50 rounded-2xl active:scale-[0.98] transition cursor-pointer">
-                <div class="flex items-center space-x-3">
-                    <div class="w-10 h-10 rounded-full bg-yellow-500 flex items-center justify-center font-bold text-slate-900 shadow">Q</div>
-                    <div>
-                        <div class="font-bold text-sm text-slate-900">QSM / SDA</div>
-                        <div class="text-xs text-slate-400">Qatar Sidra Mall</div>
-                    </div>
-                </div>
-                <div class="text-right">
-                    <div class="font-bold text-sm text-slate-900">0.334168 SDA</div>
-                    <div class="text-xs text-rose-500 font-semibold">$133.97 ↓ 1.0%</div>
-                </div>
-            </div>
-
-            <!-- 10. SKMH / SDA -->
-            <div onclick="openModal('SKMH / SDA - Sukoon Mind Horizon')" class="flex items-center justify-between p-3 bg-slate-50 rounded-2xl active:scale-[0.98] transition cursor-pointer">
-                <div class="flex items-center space-x-3">
-                    <div class="w-10 h-10 rounded-full bg-emerald-800 flex items-center justify-center font-bold text-white shadow">S</div>
-                    <div>
-                        <div class="font-bold text-sm text-slate-900">SKMH / SDA</div>
-                        <div class="text-xs text-slate-400">Sukoon Mind Horizon</div>
-                    </div>
-                </div>
-                <div class="text-right">
-                    <div class="font-bold text-sm text-slate-900">0.312959 SDA</div>
-                    <div class="text-xs text-rose-500 font-semibold">$125.47 ↓ 0.8%</div>
-                </div>
-            </div>
-
-            <!-- 11. DBN / SDA -->
-            <div onclick="openModal('DBN / SDA - DigiBridge Network')" class="flex items-center justify-between p-3 bg-slate-50 rounded-2xl active:scale-[0.98] transition cursor-pointer">
-                <div class="flex items-center space-x-3">
-                    <div class="w-10 h-10 rounded-full bg-green-700 flex items-center justify-center font-bold text-white shadow">D</div>
-                    <div>
-                        <div class="font-bold text-sm text-slate-900">DBN / SDA</div>
-                        <div class="text-xs text-slate-400">DigiBridge Network</div>
-                    </div>
-                </div>
-                <div class="text-right">
-                    <div class="font-bold text-sm text-slate-900">0.312536 SDA</div>
-                    <div class="text-xs text-rose-500 font-semibold">$123.55 ↓ 1.6%</div>
-                </div>
-            </div>
-
-        </div>
-    </div>
-
-    <!-- FLOATING BOTTOM NAVIGATION BAR -->
-    <div class="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-lg border-t border-slate-100 px-4 py-2 flex items-center justify-between z-40 shadow-lg">
-        <button onclick="openModal('Trang chủ')" class="flex flex-col items-center text-indigo-600">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
-            <span class="text-[10px] font-semibold mt-1">Trang chủ</span>
-        </button>
-        <button onclick="openModal('DApp Browser')" class="flex flex-col items-center text-slate-400">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"/></svg>
-            <span class="text-[10px] font-medium mt-1">DApp</span>
-        </button>
-        <!-- Center Swap Button -->
-        <button onclick="openModal('Giao dịch Swap DEX')" class="w-12 h-12 bg-indigo-600 text-white rounded-full flex items-center justify-center shadow-lg active:scale-90 transition -mt-5 border-4 border-white">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
-        </button>
-        <button onclick="openModal('Quản lý Thẻ Visa')" class="flex flex-col items-center text-slate-400">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
-            <span class="text-[10px] font-medium mt-1">Thẻ</span>
-        </button>
-        <button onclick="openModal('Hồ sơ cá nhân')" class="flex flex-col items-center text-slate-400">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
-            <span class="text-[10px] font-medium mt-1">Hồ sơ</span>
-        </button>
-    </div>
-
-    <!-- MODAL POPUP -->
-    <div id="actionModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-end justify-center transition-all duration-300">
-        <div class="bg-white w-full max-w-lg rounded-t-[30px] p-6 shadow-2xl transform translate-y-full transition-transform duration-300" id="modalContent">
-            <div class="flex items-center justify-between mb-4">
-                <h3 id="modalTitle" class="text-lg font-bold text-slate-900">Tính năng</h3>
-                <button onclick="closeModal()" class="p-2 bg-slate-100 rounded-full text-slate-500"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button>
-            </div>
-            <div class="py-6 text-center">
-                <p id="modalDesc" class="text-slate-600 text-sm">Hệ thống đang đồng bộ hóa trực tiếp với mạng lưới Sidra Chain và Bảo Pi Wallet.</p>
-                <button onclick="closeModal()" class="mt-6 w-full py-3 bg-indigo-600 text-white font-bold rounded-2xl shadow-lg active:scale-95 transition">Xác nhận</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- JAVASCRIPT XỬ LÝ -->
+    <!-- JAVASCRIPT LOGIC & ĐIỀU HƯỚNG CỬA SỔ SÂU -->
     <script>
-        function openModal(title) {
-            const modal = document.getElementById('actionModal');
-            const content = document.getElementById('modalContent');
-            document.getElementById('modalTitle').textContent = title;
-            modal.classList.remove('hidden');
-            setTimeout(() => {
-                content.classList.remove('translate-y-full');
-            }, 10);
+        // NGÂN HÀNG DỮ LIỆU MẪU ĐA DẠNG (6-10 BÀI CHO MỖI DANH MỤC)
+        const sampleListings = [
+            // Bất động sản
+            { id: 101, title: 'Biệt thự Đà Lạt view thung lũng 300m2', price: 350, category: 'realestate', categoryName: 'Bất động sản', img: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=500', desc: 'Biệt thự full nội thất gỗ cao cấp, 4 phòng ngủ, sân vườn rộng rãi.', wallet: 'GBCX7Y2Z3A4B5C6D7E8F9G0H1I2J3K4L5M6N7O8P9Q0R' },
+            { id: 102, title: 'Đất nền thổ cư Q.9 TP.HCM 100m2', price: 180, category: 'realestate', categoryName: 'Bất động sản', img: 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=500', desc: 'Sổ hồng riêng, mặt tiền đường nhựa 8m, khu dân cư đông đúc.', wallet: 'GBCX7Y2Z3A4B5C6D7E8F9G0H1I2J3K4L5M6N7O8P9Q0R' },
+            { id: 103, title: 'Căn hộ chung cư cao cấp Cần Thơ', price: 95, category: 'realestate', categoryName: 'Bất động sản', img: 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=500', desc: 'Căn hộ 2PN view sông Hậu cực đẹp, tiện ích hồ bơi gym đầy đủ.', wallet: 'GBCX7Y2Z3A4B5C6D7E8F9G0H1I2J3K4L5M6N7O8P9Q0R' },
+            { id: 104, title: 'Nhà phố thương mại Shophouse Hà Nội', price: 420, category: 'realestate', categoryName: 'Bất động sản', img: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=500', desc: 'Vị trí đắc địa kinh doanh đỉnh, 5 tầng có thang máy.', wallet: 'GBCX7Y2Z3A4B5C6D7E8F9G0H1I2J3K4L5M6N7O8P9Q0R' },
+            { id: 105, title: 'Lô đất nghỉ dưỡng ven biển Phú Quốc', price: 290, category: 'realestate', categoryName: 'Bất động sản', img: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=500', desc: 'Cách bãi tắm 200m, thích hợp làm Homestay hoặc Resort.', wallet: 'GBCX7Y2Z3A4B5C6D7E8F9G0H1I2J3K4L5M6N7O8P9Q0R' },
+            { id: 106, title: 'Nhà vườn sinh thái ven sông Đồng Nai', price: 150, category: 'realestate', categoryName: 'Bất động sản', img: 'https://images.unsplash.com/photo-1518780664697-55e3ad937233?w=500', desc: 'Có sẵn cây ăn trái, ao cá, không khí mát mẻ quanh năm.', wallet: 'GBCX7Y2Z3A4B5C6D7E8F9G0H1I2J3K4L5M6N7O8P9Q0R' },
+
+            // Xe cộ
+            { id: 201, title: 'Xe Mazda CX-5 2.5 AWD 2022 trắng', price: 85, category: 'vehicles', categoryName: 'Xe cộ', img: 'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=500', desc: 'Xe gia đình đi giữ gìn, ODO 15.000km, bảo dưỡng hãng đầy đủ.', wallet: 'GBCX7Y2Z3A4B5C6D7E8F9G0H1I2J3K4L5M6N7O8P9Q0R' },
+            { id: 202, title: 'Xe điện VinFast VF8 Plus mới 99%', price: 92, category: 'vehicles', categoryName: 'Xe cộ', img: 'https://images.unsplash.com/photo-1563720223185-11003d516935?w=500', desc: 'Pin thuê, màu xám xi măng thời thượng, đăng ký chính chủ.', wallet: 'GBCX7Y2Z3A4B5C6D7E8F9G0H1I2J3K4L5M6N7O8P9Q0R' },
+            { id: 203, title: 'Xe máy Vespa Sprint ABS 125cc', price: 12, category: 'vehicles', categoryName: 'Xe cộ', img: 'https://images.unsplash.com/photo-1558981806-ec527fa84c39?w=500', desc: 'Màu vàng nhám cá tính, biển số thành phố đẹp.', wallet: 'GBCX7Y2Z3A4B5C6D7E8F9G0H1I2J3K4L5M6N7O8P9Q0R' },
+            { id: 204, title: 'Xe bán tải Ford Ranger Wildtrak', price: 68, category: 'vehicles', categoryName: 'Xe cộ', img: 'https://images.unsplash.com/photo-1533106497176-45ae6b258547?w=500', desc: 'Máy Bi-Turbo mạnh mẽ, lên sẵn nhiều đồ chơi việt dã.', wallet: 'GBCX7Y2Z3A4B5C6D7E8F9G0H1I2J3K4L5M6N7O8P9Q0R' },
+            { id: 205, title: 'Xe Honda SH 150i ABS nhập Ý', price: 25, category: 'vehicles', categoryName: 'Xe cộ', img: 'https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?w=500', desc: 'Xe cùm công tắc zin, sơn nguyên bản chưa dặm tút.', wallet: 'GBCX7Y2Z3A4B5C6D7E8F9G0H1I2J3K4L5M6N7O8P9Q0R' },
+            { id: 206, title: 'Xe thể thao Toyota GR Supra', price: 210, category: 'vehicles', categoryName: 'Xe cộ', img: 'https://images.unsplash.com/photo-1617814076367-b759c7d7e738?w=500', desc: 'Bản độ thể thao độc nhất, màu đỏ rực rỡ.', wallet: 'GBCX7Y2Z3A4B5C6D7E8F9G0H1I2J3K4L5M6N7O8P9Q0R' },
+
+            // Chợ hàng hóa
+            { id: 301, title: 'Bình gốm sứ cổ hoa văn xanh', price: 2.5, category: 'goods', categoryName: 'Chợ hàng hóa', img: 'https://images.unsplash.com/photo-1578749556568-bc2c40e68b61?w=500', desc: 'Gốm thủ công chế tác tinh xảo, thích hợp sưu tầm trưng bày.', wallet: 'GBCX7Y2Z3A4B5C6D7E8F9G0H1I2J3K4L5M6N7O8P9Q0R' },
+            { id: 302, title: 'iPhone 15 Pro Max 512GB VN/A', price: 18.5, category: 'goods', categoryName: 'Chợ hàng hóa', img: 'https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=500', desc: 'Màu Titan Tự Nhiên, pin 100%, bảo hành chính hãng dài.', wallet: 'GBCX7Y2Z3A4B5C6D7E8F9G0H1I2J3K4L5M6N7O8P9Q0R' },
+            { id: 303, title: 'Laptop MacBook Pro M3 Max 16 inch', price: 32, category: 'goods', categoryName: 'Chợ hàng hóa', img: 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=500', desc: 'RAM 36GB, SSD 1TB, máy mới fullbox chưa qua sử dụng.', wallet: 'GBCX7Y2Z3A4B5C6D7E8F9G0H1I2J3K4L5M6N7O8P9Q0R' },
+            { id: 304, title: 'Đồng hồ Thụy Sĩ Omega Seamaster', price: 45, category: 'goods', categoryName: 'Chợ hàng hóa', img: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500', desc: 'Thép không gỉ, mặt xanh lướt sóng, đầy đủ thẻ bảo hành.', wallet: 'GBCX7Y2Z3A4B5C6D7E8F9G0H1I2J3K4L5M6N7O8P9Q0R' },
+
+            // Dịch vụ
+            { id: 401, title: 'Dịch vụ Thiết kế Web / DApp Pi Network', price: 5.0, category: 'services', categoryName: 'Dịch vụ', img: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=500', desc: 'Lập trình chuẩn SDK Pi, tối ưu giao diện di động mượt mà.', wallet: 'GBCX7Y2Z3A4B5C6D7E8F9G0H1I2J3K4L5M6N7O8P9Q0R' },
+            { id: 402, title: 'Dịch vụ Dịch thuật Công chứng Anh - Việt', price: 0.5, category: 'services', categoryName: 'Dịch vụ', img: 'https://images.unsplash.com/photo-1455390582262-044cdead277a?w=500', desc: 'Dịch thuật nhanh chóng, chuẩn pháp lý hồ sơ du học, visa.', wallet: 'GBCX7Y2Z3A4B5C6D7E8F9G0H1I2J3K4L5M6N7O8P9Q0R' },
+
+            // Đấu giá Pi
+            { id: 501, title: 'Máy chơi game Retro cổ hiếm có', price: 1.2, category: 'auction', categoryName: 'Đấu giá Pi', img: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=500', desc: 'Máy nguyên bản hoạt động tốt, kèm 500 game tuổi thơ.', wallet: 'GBCX7Y2Z3A4B5C6D7E8F9G0H1I2J3K4L5M6N7O8P9Q0R' }
+        ];
+
+        // KHỞI TẠO BỘ NHỚ LƯU TRỮ CHUNG (LOCAL STORAGE SYNCRONIZATION)
+        function getCombinedListings() {
+            const userCreated = JSON.parse(localStorage.getItem('my_pi_listings') || '[]');
+            return [...userCreated, ...sampleListings];
         }
 
-        function closeModal() {
-            const modal = document.getElementById('actionModal');
-            const content = document.getElementById('modalContent');
-            content.classList.add('translate-y-full');
-            setTimeout(() => {
-                modal.classList.add('hidden');
-            }, 300);
+        let historyStack = ['home'];
+        let currentDetailListing = null;
+
+        // BỘ ĐIỀU HƯỚNG MỞ SÂU CỬA SỔ (DEEP NAVIGATION LOGIC)
+        function showScreen(screenId) {
+            document.querySelectorAll('.view-screen').forEach(el => {
+                el.classList.remove('active');
+            });
+            const target = document.getElementById(screenId);
+            if (target) {
+                target.classList.add('active');
+            }
+
+            // Nút Back trên Header
+            const backBtn = document.getElementById('btn-back');
+            if (screenId !== 'view-home') {
+                backBtn.classList.remove('hidden');
+            } else {
+                backBtn.classList.add('hidden');
+            }
         }
+
+        function switchTab(tabName) {
+            historyStack = [tabName];
+            showScreen('view-' + tabName);
+
+            // Cập nhật trạng thái màu sắc Bottom Nav
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.replace('text-ocean-600', 'text-slate-400');
+            });
+            const activeNav = document.getElementById('nav-' + tabName);
+            if (activeNav) {
+                activeNav.classList.replace('text-slate-400', 'text-ocean-600');
+            }
+        }
+
+        function goBack() {
+            if (historyStack.length > 1) {
+                historyStack.pop();
+                const prev = historyStack[historyStack.length - 1];
+                showScreen('view-' + prev);
+            } else {
+                switchTab('home');
+            }
+        }
+
+        // 1. MỞ DANH MỤC HÀNG HÓA SÂU (CATEGORY DEEP NAVIGATION)
+        function openCategory(catName, catKey) {
+            historyStack.push('list');
+            showScreen('view-list');
+
+            document.getElementById('category-title').innerText = catName;
+            const grid = document.getElementById('category-listings-grid');
+            grid.innerHTML = '';
+
+            const allData = getCombinedListings();
+            const filtered = (catKey === 'all') ? allData : allData.filter(item => item.category === catKey);
+
+            document.getElementById('category-count').innerText = `${filtered.length} bài đăng`;
+
+            filtered.forEach(item => {
+                grid.appendChild(createListingCard(item));
+            });
+        }
+
+        // 2. MỞ CHI TIẾT SẢN PHẨM SÂU (PRODUCT DETAIL DEEP NAVIGATION)
+        function openDetail(id) {
+            const allData = getCombinedListings();
+            const found = allData.find(item => item.id == id);
+            if (!found) return;
+
+            currentDetailListing = found;
+            historyStack.push('detail');
+            showScreen('view-detail');
+
+            document.getElementById('detail-img').src = found.img;
+            document.getElementById('detail-title').innerText = found.title;
+            document.getElementById('detail-price').innerText = found.price;
+            document.getElementById('detail-category').innerText = found.categoryName || found.category;
+            document.getElementById('detail-desc').innerText = found.desc;
+            document.getElementById('detail-wallet').innerText = found.wallet || 'GBCX7Y2Z3A4B5C6D7E8F9G0H1I2J3K4L5M6N7O8P9Q0R';
+        }
+
+        // HÀM TẠO CARD SẢN PHẨM TRỰC QUAN
+        function createListingCard(item) {
+            const card = document.createElement('div');
+            card.className = 'bg-white rounded-xl shadow-sm overflow-hidden border border-slate-100 flex flex-col justify-between hover:shadow-md transition touch-action cursor-pointer';
+            card.onclick = () => openDetail(item.id);
+
+            card.innerHTML = `
+                <div>
+                    <div class="h-28 bg-slate-100 relative overflow-hidden">
+                        <img src="${item.img}" class="w-full h-full object-cover" loading="lazy" alt="${item.title}">
+                    </div>
+                    <div class="p-2.5">
+                        <h4 class="text-xs font-bold text-slate-800 line-clamp-2 leading-snug mb-1">${item.title}</h4>
+                        <div class="flex items-baseline gap-0.5">
+                            <span class="text-sm font-extrabold text-ocean-600">${item.price}</span>
+                            <span class="text-[10px] font-bold text-amber-500">π</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+            return card;
+        }
+
+        // BÀI ĐĂNG TRANG CHỦ
+        function renderHomeListings() {
+            const grid = document.getElementById('home-listings-grid');
+            grid.innerHTML = '';
+            const data = getCombinedListings().slice(0, 6);
+            data.forEach(item => {
+                grid.appendChild(createListingCard(item));
+            });
+        }
+
+        // 3. ĐĂNG TIN MỚI & LƯU TỰ ĐỘNG
+        function submitNewListing(e) {
+            e.preventDefault();
+            const myWallet = localStorage.getItem('user_pi_wallet');
+            
+            if (!myWallet) {
+                alert('Vui lòng vào mục "Cá nhân" dán Địa chỉ Ví Pi của bạn trước khi đăng bài!');
+                switchTab('profile');
+                return;
+            }
+
+            const newListing = {
+                id: Date.now(),
+                title: document.getElementById('inp-title').value,
+                category: document.getElementById('inp-category').value,
+                categoryName: document.getElementById('inp-category').options[document.getElementById('inp-category').selectedIndex].text,
+                price: parseFloat(document.getElementById('inp-price').value),
+                img: document.getElementById('inp-img').value || 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=500',
+                desc: document.getElementById('inp-desc').value,
+                wallet: myWallet
+            };
+
+            const existing = JSON.parse(localStorage.getItem('my_pi_listings') || '[]');
+            existing.unshift(newListing);
+            localStorage.setItem('my_pi_listings', JSON.stringify(existing));
+
+            alert('Đăng bài thành công!');
+            document.getElementById('form-create').reset();
+            renderHomeListings();
+            switchTab('home');
+        }
+
+        // 4. QUẢN LÝ VÍ & LƯU ĐỊA CHỈ VÍ G-ADDRESS
+        function saveUserWallet() {
+            const val = document.getElementById('user-wallet-input').value.trim();
+            if (val.length === 56 && val.startsWith('G')) {
+                localStorage.setItem('user_pi_wallet', val);
+                document.getElementById('wallet-status').innerText = 'Đã nối ví';
+                alert('Đã lưu Địa chỉ Ví Pi công khai thành công!');
+            } else {
+                alert('Địa chỉ Ví Pi công khai phải bắt đầu bằng chữ "G" và có độ dài đúng 56 ký tự!');
+            }
+        }
+
+        function copySellerWallet() {
+            const wallet = document.getElementById('detail-wallet').innerText;
+            navigator.clipboard.writeText(wallet).then(() => {
+                alert('Đã sao chép Địa chỉ Ví người bán!');
+            });
+        }
+
+        function handlePayment(type) {
+            if (type === 'Pi') {
+                alert(`Vui lòng mở Ví Pi của bạn trong Pi Browser và chuyển số Pi đến địa chỉ:\n\n${currentDetailListing.wallet}\n\nNội dung: Thanh toan đơn hàng #${currentDetailListing.id}`);
+            } else {
+                alert('Đã ghi nhận yêu cầu Thanh toán COD khi nhận hàng!');
+            }
+        }
+
+        // TỰ ĐỘNG KHỞI CHẠY KHI TẢI TRANG
+        window.addEventListener('DOMContentLoaded', () => {
+            renderHomeListings();
+            
+            // Khôi phục ví cũ nếu có
+            const savedWallet = localStorage.getItem('user_pi_wallet');
+            if (savedWallet) {
+                document.getElementById('user-wallet-input').value = savedWallet;
+                document.getElementById('wallet-status').innerText = 'Đã nối ví';
+            }
+        });
     </script>
 </body>
 </html>
